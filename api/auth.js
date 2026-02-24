@@ -31,7 +31,7 @@ export default function handler(req, res) {
 
   // Inicia o fluxo OAuth
   const clientId = process.env.GITHUB_CLIENT_ID;
-  const redirectUri = 'https://site-advocacia.vercel.app/api/auth';
+  const redirectUri = 'https://site-advocacia-one.vercel.app/api/auth';
   
   const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=repo,user`;
   
