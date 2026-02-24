@@ -17,7 +17,6 @@ export default function Blog() {
     whatsapp: "5511999999999"
   });
 
-  // Carregar posts e configurações
   useEffect(() => {
     async function loadData() {
       try {
@@ -25,24 +24,45 @@ export default function Blog() {
         const settingsData = await loadContent('/src/content/settings/general.md');
         setContent(prev => ({ ...prev, ...settingsData?.data }));
 
-        // Carregar posts
-        const postFiles = [
-          'primeiro-artigo'
-          // Adicione mais slugs aqui conforme criar artigos
-        ];
+        // CARREGAR LISTA DE POSTS AUTOMATICAMENTE
+        let slugs = [];
         
+        // Tenta usar a função serverless (em produção)
+        try {
+          const response = await fetch('/.netlify/functions/list-posts');
+          if (response.ok) {
+            const data = await response.json();
+            slugs = data.posts;
+          }
+        } catch (error) {
+          console.log('Usando fallback local');
+        }
+
+        // Fallback para desenvolvimento local
+        if (slugs.length === 0) {
+          // Em desenvolvimento, você pode manter uma lista manual
+          slugs = [
+            'primeiro-artigo'
+          ];
+        }
+        
+        // Carregar cada post
         const postsData = [];
         
-        for (const slug of postFiles) {
-          const response = await fetch(`/src/content/posts/${slug}.md`);
-          if (response.ok) {
-            const text = await response.text();
-            const { data, content } = parseFrontmatter(text);
-            postsData.push({
-              slug,
-              data,
-              content: content.substring(0, 200) + '...'
-            });
+        for (const slug of slugs) {
+          try {
+            const response = await fetch(`/src/content/posts/${slug}.md`);
+            if (response.ok) {
+              const text = await response.text();
+              const { data, content } = parseFrontmatter(text);
+              postsData.push({
+                slug,
+                data,
+                content: content.substring(0, 200) + '...'
+              });
+            }
+          } catch (error) {
+            console.log(`Erro ao carregar ${slug}`);
           }
         }
         
@@ -74,9 +94,7 @@ export default function Blog() {
     return { data, content: match[2] };
   }
 
-  // CORRIGIDO: Filtrar posts com verificação de segurança
   const filteredPosts = posts.filter(post => {
-    // Verificar se post e post.data existem
     if (!post || !post.data) return false;
     
     const matchesCategory = selectedCategory === 'todos' || 
@@ -92,7 +110,6 @@ export default function Blog() {
     return matchesCategory && matchesSearch;
   });
 
-  // CORRIGIDO: Categorias únicas com verificação
   const categories = ['todos', ...new Set(
     posts
       .filter(post => post && post.data && post.data.category)
@@ -118,7 +135,6 @@ export default function Blog() {
         whatsapp={content.whatsapp}
       />
 
-      {/* Hero do Blog */}
       <section className="pt-32 pb-16 bg-gradient-to-r from-primary to-secondary text-white">
         <div className="container-custom text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-4 animate-fadeInUp">
@@ -130,11 +146,9 @@ export default function Blog() {
         </div>
       </section>
 
-      {/* Barra de busca e filtros */}
       <section className="py-8 bg-gray-50 border-b">
         <div className="container-custom">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-            {/* Busca */}
             <div className="relative w-full md:w-96">
               <input
                 type="text"
@@ -148,7 +162,6 @@ export default function Blog() {
               </svg>
             </div>
 
-            {/* Filtro por categoria */}
             <div className="flex gap-2 overflow-x-auto pb-2 w-full md:w-auto">
               {categories.map(category => (
                 <button
@@ -168,7 +181,6 @@ export default function Blog() {
         </div>
       </section>
 
-      {/* Lista de artigos */}
       <section className="py-16 bg-white">
         <div className="container-custom">
           {filteredPosts.length === 0 ? (
@@ -182,29 +194,23 @@ export default function Blog() {
                 <article
                   key={post.slug}
                   className="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
-                  style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  {/* Imagem do post */}
                   <div className="relative h-48 overflow-hidden">
                     <img
                       src={post.data.image || "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"}
                       alt={post.data.title || 'Artigo'}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     
-                    {/* Categoria */}
                     <span className="absolute top-4 left-4 bg-accent text-primary text-sm font-semibold px-3 py-1 rounded-full">
                       {post.data.category || 'Direito'}
                     </span>
                     
-                    {/* Data */}
                     <span className="absolute bottom-4 right-4 bg-black/50 text-white text-sm px-3 py-1 rounded-full backdrop-blur-sm">
                       {post.data.date ? new Date(post.data.date).toLocaleDateString('pt-BR') : 'Data não informada'}
                     </span>
                   </div>
 
-                  {/* Conteúdo */}
                   <div className="p-6">
                     <h2 className="text-2xl font-bold text-primary mb-3 group-hover:text-accent transition-colors">
                       <Link to={`/blog/${post.slug}`}>
@@ -216,7 +222,6 @@ export default function Blog() {
                       {post.data.description || post.content}
                     </p>
 
-                    {/* Autor e tempo de leitura */}
                     <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-primary">
