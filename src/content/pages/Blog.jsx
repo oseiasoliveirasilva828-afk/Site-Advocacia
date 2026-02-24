@@ -9,7 +9,6 @@ import '../styles/animations.css';
 export default function Blog() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState('todos');
   const [searchTerm, setSearchTerm] = useState('');
   const [content, setContent] = useState({
     siteName: "Dr. Carlos Silva",
@@ -20,45 +19,35 @@ export default function Blog() {
   useEffect(() => {
     async function loadData() {
       try {
-        // Carregar configurações
         const settingsData = await loadContent('/src/content/settings/general.md');
         setContent(prev => ({ ...prev, ...settingsData?.data }));
 
-        // ===== GITHUB API - LISTAGEM AUTOMÁTICA =====
-        const repo = 'Octavio345/Site-Advocacia';
+        // Buscar lista de arquivos .md via GitHub API (100% automático)
+        const repo = 'oseiasoliveirasilva828-afk/Site-Advocacia';
         const branch = 'main';
         const path = 'src/content/posts';
-        
-        // Buscar lista de arquivos do GitHub
-        const githubResponse = await fetch(`https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`);
-        const files = await githubResponse.json();
-        
-        // Filtrar apenas arquivos .md (ignorar index.json e outros)
+
+        const githubRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`);
+        const files = await githubRes.json();
+
         const slugs = files
-          .filter(file => file.name.endsWith('.md') && file.name !== 'index.json')
-          .map(file => file.name.replace('.md', ''));
-        
-        // Carregar cada post
+          .filter(f => f.name.endsWith('.md') && f.name !== 'index.json')
+          .map(f => f.name.replace('.md', ''));
+
         const postsData = [];
-        
         for (const slug of slugs) {
-          try {
-            const response = await fetch(`/src/content/posts/${slug}.md`);
-            if (response.ok) {
-              const text = await response.text();
-              const { data, content } = parseFrontmatter(text);
-              postsData.push({
-                slug,
-                data,
-                content: content.substring(0, 200) + '...'
-              });
-            }
-          } catch (error) {
-            console.log(`Erro ao carregar ${slug}`);
+          const res = await fetch(`/src/content/posts/${slug}.md`);
+          if (res.ok) {
+            const text = await res.text();
+            const { data, content } = parseFrontmatter(text);
+            postsData.push({
+              slug,
+              data,
+              content: content.substring(0, 150) + '...'
+            });
           }
         }
-        
-        // Ordenar por data (mais recentes primeiro)
+
         postsData.sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
         setPosts(postsData);
       } catch (error) {
@@ -67,14 +56,12 @@ export default function Blog() {
         setLoading(false);
       }
     }
-    
     loadData();
   }, []);
 
   function parseFrontmatter(text) {
     const match = text.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
     if (!match) return { data: {}, content: text };
-    
     const data = {};
     match[1].split('\n').forEach(line => {
       if (line.includes(': ')) {
@@ -82,32 +69,13 @@ export default function Blog() {
         data[key.trim()] = value.join(': ').trim();
       }
     });
-    
     return { data, content: match[2] };
   }
 
-  // Filtrar posts
-  const filteredPosts = posts.filter(post => {
-    if (!post || !post.data) return false;
-    
-    const matchesCategory = selectedCategory === 'todos' || 
-      (post.data.category && post.data.category === selectedCategory);
-    
-    const postTitle = post.data.title || '';
-    const postDescription = post.data.description || '';
-    
-    const matchesSearch = 
-      postTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      postDescription.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    return matchesCategory && matchesSearch;
-  });
-
-  const categories = ['todos', ...new Set(
-    posts
-      .filter(post => post && post.data && post.data.category)
-      .map(p => p.data.category)
-  )];
+  const filteredPosts = posts.filter(p =>
+    p.data.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.data.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   if (loading) {
     return (
@@ -122,17 +90,11 @@ export default function Blog() {
 
   return (
     <div className="font-sans overflow-x-hidden">
-      <Header 
-        siteName={content.siteName}
-        oab={content.oab}
-        whatsapp={content.whatsapp}
-      />
+      <Header siteName={content.siteName} oab={content.oab} whatsapp={content.whatsapp} />
 
-      <section className="pt-32 pb-16 bg-gradient-to-r from-primary to-secondary text-white">
-        <div className="container-custom text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-4 animate-fadeInUp">
-            Artigos & Publicações
-          </h1>
+      <section className="pt-32 pb-16 bg-gradient-to-r from-primary to-secondary text-white text-center">
+        <div className="container-custom">
+          <h1 className="text-5xl md:text-6xl font-bold mb-4 animate-fadeInUp">Artigos & Publicações</h1>
           <p className="text-xl opacity-90 max-w-2xl mx-auto animate-fadeInUp delay-200">
             Análises jurídicas, dicas e informações relevantes para você e seu negócio.
           </p>
@@ -140,97 +102,37 @@ export default function Blog() {
       </section>
 
       <section className="py-8 bg-gray-50 border-b">
-        <div className="container-custom">
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-            <div className="relative w-full md:w-96">
-              <input
-                type="text"
-                placeholder="Buscar artigos..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-3 pl-12 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
-              />
-              <svg className="w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-
-            <div className="flex gap-2 overflow-x-auto pb-2 w-full md:w-auto">
-              {categories.map(category => (
-                <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`px-4 py-2 rounded-full whitespace-nowrap transition-all ${
-                    selectedCategory === category
-                      ? 'bg-accent text-primary font-semibold'
-                      : 'bg-white text-gray-600 hover:bg-gray-100'
-                  }`}
-                >
-                  {category === 'todos' ? 'Todos' : category}
-                </button>
-              ))}
-            </div>
-          </div>
+        <div className="container-custom flex justify-center">
+          <input
+            type="text"
+            placeholder="Buscar artigos..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full max-w-md px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-accent"
+          />
         </div>
       </section>
 
       <section className="py-16 bg-white">
         <div className="container-custom">
           {filteredPosts.length === 0 ? (
-            <div className="text-center py-16">
-              <p className="text-2xl text-gray-400 mb-4">Nenhum artigo encontrado</p>
-              <p className="text-gray-500">Tente buscar com outros termos ou categorias.</p>
-            </div>
+            <p className="text-center text-gray-500">Nenhum artigo encontrado.</p>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredPosts.map((post, index) => (
-                <article
-                  key={post.slug}
-                  className="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
-                >
-                  <div className="relative h-48 overflow-hidden">
-                    <img
-                      src={post.data.image || "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"}
-                      alt={post.data.title || 'Artigo'}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
-                    
-                    <span className="absolute top-4 left-4 bg-accent text-primary text-sm font-semibold px-3 py-1 rounded-full">
-                      {post.data.category || 'Direito'}
-                    </span>
-                    
-                    <span className="absolute bottom-4 right-4 bg-black/50 text-white text-sm px-3 py-1 rounded-full backdrop-blur-sm">
-                      {post.data.date ? new Date(post.data.date).toLocaleDateString('pt-BR') : 'Data não informada'}
-                    </span>
-                  </div>
-
+              {filteredPosts.map((post, idx) => (
+                <article key={post.slug} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition hover:-translate-y-2">
+                  {post.data.image && (
+                    <img src={post.data.image} alt={post.data.title} className="w-full h-48 object-cover" />
+                  )}
                   <div className="p-6">
-                    <h2 className="text-2xl font-bold text-primary mb-3 group-hover:text-accent transition-colors">
-                      <Link to={`/blog/${post.slug}`}>
-                        {post.data.title || 'Sem título'}
-                      </Link>
+                    <span className="text-sm text-accent font-semibold">{post.data.category || 'Direito'}</span>
+                    <h2 className="text-2xl font-bold text-primary mt-2">
+                      <Link to={`/blog/${post.slug}`}>{post.data.title || 'Sem título'}</Link>
                     </h2>
-                    
-                    <p className="text-gray-600 mb-4 line-clamp-3">
-                      {post.data.description || post.content}
-                    </p>
-
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-primary">
-                          👤
-                        </div>
-                        <span className="text-sm text-gray-600">{post.data.author || 'Dr. Carlos Silva'}</span>
-                      </div>
-                      <Link
-                        to={`/blog/${post.slug}`}
-                        className="text-accent hover:text-primary font-medium flex items-center gap-1 group/link"
-                      >
-                        Ler mais
-                        <svg className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </Link>
+                    <p className="text-gray-600 mt-2">{post.data.description || post.content}</p>
+                    <div className="flex justify-between items-center mt-4 text-sm text-gray-500">
+                      <span>{post.data.date ? new Date(post.data.date).toLocaleDateString('pt-BR') : 'Data não informada'}</span>
+                      <Link to={`/blog/${post.slug}`} className="text-accent font-medium hover:underline">Ler mais →</Link>
                     </div>
                   </div>
                 </article>
@@ -241,14 +143,7 @@ export default function Blog() {
       </section>
 
       <WhatsAppButton whatsapp={content.whatsapp} />
-      <Footer
-        siteName={content.siteName}
-        oab={content.oab}
-        phone={content.phone}
-        email={content.email}
-        address={content.address}
-        whatsapp={content.whatsapp}
-      />
+      <Footer siteName={content.siteName} oab={content.oab} phone={content.phone} email={content.email} address={content.address} whatsapp={content.whatsapp} />
     </div>
   );
 }
