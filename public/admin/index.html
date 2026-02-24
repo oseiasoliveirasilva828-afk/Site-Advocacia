@@ -9,21 +9,16 @@
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   
   <script>
-    // PEGAR O TOKEN DA URL AUTOMATICAMENTE
+    // Verificar se tem token no localStorage
     (function() {
-      const hash = window.location.hash;
-      if (hash && hash.includes('access_token=')) {
-        // Extrai o token
-        const token = hash.split('access_token=')[1].split('&')[0];
+      const token = localStorage.getItem('github_token');
+      if (token) {
+        // Forçar o CMS a usar o token
+        window.CMS = window.CMS || {};
+        window.CMS.getToken = function() { return token; };
         
-        // Salva no localStorage (alguns CMS precisam disso)
-        localStorage.setItem('github_token', token);
-        
-        // Redireciona removendo o token da URL (para não ficar exposto)
-        window.location.hash = '';
-        
-        // Recarrega a página para o CMS ler o token
-        window.location.reload();
+        // Limpar token após usar
+        localStorage.removeItem('github_token');
       }
     })();
   </script>

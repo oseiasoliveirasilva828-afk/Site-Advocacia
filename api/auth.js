@@ -1,11 +1,9 @@
 // api/auth.js
 export default async function handler(req, res) {
-  // Configurar CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // Responder a requisições OPTIONS (preflight)
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
@@ -13,17 +11,16 @@ export default async function handler(req, res) {
 
   const { code, error } = req.query;
 
-  // Se houver erro do GitHub
   if (error) {
-    console.error('Erro do GitHub:', error);
-    res.redirect(`/admin/#error=${error}`);
+    // Redireciona com erro
+    res.setHeader('Content-Type', 'text/html');
+    res.send(`<script>window.location.href='/admin/#error=${error}';</script>`);
     return;
   }
 
-  // Se recebeu o código de autorização
   if (code) {
     try {
-      // Trocar o código por um token de acesso
+      // Trocar código por token
       const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
         method: 'POST',
         headers: {
@@ -41,27 +38,42 @@ export default async function handler(req, res) {
       const tokenData = await tokenResponse.json();
       
       if (tokenData.error) {
-        console.error('Erro ao obter token:', tokenData.error);
-        res.redirect(`/admin/#error=${tokenData.error}`);
+        res.setHeader('Content-Type', 'text/html');
+        res.send(`<script>window.location.href='/admin/#error=${tokenData.error}';</script>`);
         return;
       }
 
-      // Redireciona para o admin com o token
-      res.redirect(`/admin/#access_token=${tokenData.access_token}`);
+      // MÉTODO DIFERENTE: HTML com script que salva o token
+      res.setHeader('Content-Type', 'text/html');
+      res.send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Redirecionando...</title>
+        </head>
+        <body>
+          <script>
+            // Salvar token no localStorage
+            localStorage.setItem('github_token', '${tokenData.access_token}');
+            // Redirecionar para o admin
+            window.location.href = '/admin/';
+          </script>
+        </body>
+        </html>
+      `);
       return;
     } catch (error) {
-      console.error('Erro na troca de token:', error);
-      res.redirect(`/admin/#error=token_exchange_failed`);
+      res.setHeader('Content-Type', 'text/html');
+      res.send(`<script>window.location.href='/admin/#error=token_exchange_failed';</script>`);
       return;
     }
   }
 
-  // Iniciar fluxo OAuth (primeira vez)
+  // Iniciar fluxo OAuth
   const clientId = process.env.GITHUB_CLIENT_ID;
   const redirectUri = 'https://site-advocacia-one.vercel.app/api/auth';
   
   const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=repo,user`;
   
-  console.log('Redirecionando para GitHub:', authUrl);
   res.redirect(authUrl);
 }
