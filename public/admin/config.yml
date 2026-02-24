@@ -9,7 +9,7 @@ media_folder: "public/images/uploads"
 public_folder: "/images/uploads"
 
 collections:
-  - name: "posts"
+  - name: "posts"  # ← NOME ÚNICO
     label: "Artigos"
     folder: "src/content/posts"
     create: true
