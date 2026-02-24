@@ -4,24 +4,55 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gerenciar Site</title>
-  <!-- IMPORTANTE: Script do Netlify Identity -->
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
   <!-- Inclui o CMS -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   
-  <!-- Script para abrir o modal de login -->
   <script>
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on("init", user => {
-        if (!user) {
-          window.netlifyIdentity.on("login", () => {
-            document.location.href = "/admin/";
-          });
+    // Configuração manual para GitHub OAuth
+    window.CMS_MANUAL_INIT = true;
+    
+    window.initCMS = function() {
+      window.CMS.init({
+        config: {
+          backend: {
+            name: "github",
+            repo: "Octavio345/Site-Advocacia",
+            branch: "main",
+            base_url: "https://site-advocacia-one.vercel.app/",
+            auth_endpoint: "api/auth"
+          },
+          media_folder: "public/images/uploads",
+          public_folder: "/images/uploads",
+          collections: [
+            {
+              name: "posts",
+              label: "Artigos",
+              folder: "src/content/posts",
+              create: true,
+              slug: "{{year}}-{{month}}-{{day}}-{{slug}}",
+              fields: [
+                { label: "Título", name: "title", widget: "string" },
+                { label: "Data", name: "date", widget: "datetime" },
+                { label: "Categoria", name: "category", widget: "string", required: false },
+                { label: "Descrição", name: "description", widget: "text", required: false },
+                { label: "Imagem de destaque", name: "image", widget: "image", required: false },
+                { label: "Autor", name: "author", widget: "string", default: "Dr. Carlos Silva" },
+                { label: "Conteúdo", name: "body", widget: "markdown" }
+              ]
+            }
+          ]
         }
       });
-    }
+    };
+  </script>
+  
+  <!-- Carrega o CMS após a configuração -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      window.initCMS();
+    });
   </script>
 </body>
 </html>
