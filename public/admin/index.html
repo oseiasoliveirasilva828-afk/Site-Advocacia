@@ -45,7 +45,7 @@
   </div>
 
   <script>
-    // CONFIGURAÇÃO DO CMS
+    // ===== CONFIGURAÇÃO MANUAL DO CMS (IGNORA CONFIG.YML) =====
     const CMS_CONFIG = {
       backend: {
         name: "github",
@@ -76,43 +76,34 @@
       ]
     };
 
-    // FUNÇÃO PARA INICIAR CMS COM TOKEN
-    function startCMSWithToken(token) {
-      // Salvar token
-      localStorage.setItem('github_token', token);
-      
-      // Forçar CMS a usar o token
-      window.CMS = window.CMS || {};
-      window.CMS.getToken = function() { return token; };
-      
-      // Iniciar CMS manualmente
+    // ===== INICIAR CMS COM CONFIGURAÇÃO MANUAL =====
+    function initCMS() {
       window.CMS_MANUAL_INIT = true;
       
-      // Carregar script do CMS
       const script = document.createElement('script');
       script.src = 'https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js';
       script.onload = function() {
         window.CMS.init({ config: CMS_CONFIG });
-        document.getElementById('container').innerHTML = '<p>✅ CMS carregado! Redirecionando...</p>';
+        document.getElementById('message').innerText = '✅ CMS carregado!';
       };
       document.body.appendChild(script);
     }
 
-    // VERIFICAR TOKEN NA URL
+    // ===== GERENCIAR TOKEN =====
     const hash = window.location.hash;
+    
     if (hash && hash.includes('access_token=')) {
       const token = hash.split('access_token=')[1].split('&')[0];
+      localStorage.setItem('github_token', token);
       document.getElementById('message').innerText = '✅ Token obtido! Iniciando CMS...';
-      startCMSWithToken(token);
+      window.location.hash = '';
+      initCMS();
     } 
-    // VERIFICAR TOKEN SALVO
     else if (localStorage.getItem('github_token')) {
-      const token = localStorage.getItem('github_token');
       document.getElementById('message').innerText = '🔑 Sessão ativa! Iniciando CMS...';
-      startCMSWithToken(token);
+      initCMS();
     }
     else {
-      // MOSTRAR BOTÃO DE LOGIN
       document.getElementById('container').innerHTML = `
         <h1>⚖️ Dr. Carlos Silva</h1>
         <p>Faça login para gerenciar os artigos do blog</p>
