@@ -24,16 +24,21 @@ export default function Blog() {
         const settingsData = await loadContent('/src/content/settings/general.md');
         setContent(prev => ({ ...prev, ...settingsData?.data }));
 
-        // PASSO 1: Carregar o index.json com a lista de slugs
-        const indexResponse = await fetch('/src/content/posts/index.json');
-        let slugs = [];
+        // ===== GITHUB API - LISTAGEM AUTOMÁTICA =====
+        const repo = 'Octavio345/Site-Advocacia';
+        const branch = 'main';
+        const path = 'src/content/posts';
         
-        if (indexResponse.ok) {
-          const indexData = await indexResponse.json();
-          slugs = indexData.posts || [];
-        }
-
-        // PASSO 2: Carregar cada post pelo slug
+        // Buscar lista de arquivos do GitHub
+        const githubResponse = await fetch(`https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`);
+        const files = await githubResponse.json();
+        
+        // Filtrar apenas arquivos .md (ignorar index.json e outros)
+        const slugs = files
+          .filter(file => file.name.endsWith('.md') && file.name !== 'index.json')
+          .map(file => file.name.replace('.md', ''));
+        
+        // Carregar cada post
         const postsData = [];
         
         for (const slug of slugs) {
@@ -53,7 +58,7 @@ export default function Blog() {
           }
         }
         
-        // Ordenar por data
+        // Ordenar por data (mais recentes primeiro)
         postsData.sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
         setPosts(postsData);
       } catch (error) {
@@ -81,7 +86,7 @@ export default function Blog() {
     return { data, content: match[2] };
   }
 
-  // Filtros
+  // Filtrar posts
   const filteredPosts = posts.filter(post => {
     if (!post || !post.data) return false;
     
