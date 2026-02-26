@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from '-react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { marked } from 'marked';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
