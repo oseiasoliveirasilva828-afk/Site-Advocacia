@@ -539,7 +539,7 @@ export default function Post() {
             </motion.div>
           )}
 
-          {/* Conteúdo do artigo */}
+         {/* Conteúdo do artigo */}
           <div className="px-12 md:px-16 py-12">
             <motion.div
               className="prose prose-lg max-w-none
@@ -558,10 +558,8 @@ export default function Post() {
                 prose-blockquote:border-none prose-blockquote:bg-gradient-to-r prose-blockquote:from-navy-50 prose-blockquote:to-transparent
                 prose-blockquote:py-8 prose-blockquote:px-12 prose-blockquote:rounded-2xl prose-blockquote:my-12
                 prose-blockquote:not-italic prose-blockquote:text-navy-700 prose-blockquote:font-light prose-blockquote:text-xl prose-blockquote:relative
-                prose-blockquote:before:content-['"'] prose-blockquote:before:absolute prose-blockquote:before:-left-2 prose-blockquote:before:-top-4 prose-blockquote:before:text-8xl prose-blockquote:before:text-gold-500/20 prose-blockquote:before:font-serif
                 prose-img:rounded-2xl prose-img:shadow-2xl prose-img:my-12 prose-img:border-8 prose-img:border-white prose-img:transition-transform hover:prose-img:scale-[1.02] prose-img:duration-700
-                prose-hr:border-navy-200 prose-hr:my-16 prose-hr:relative
-                prose-hr:before:content-['⚖️'] prose-hr:before:absolute prose-hr:before:left-1/2 prose-hr:before:-translate-x-1/2 prose-hr:before:-top-3 prose-hr:before:bg-white prose-hr:before:px-4 prose-hr:before:text-gold-500"
+                prose-hr:border-navy-200 prose-hr:my-16 prose-hr:relative"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1 }}
@@ -569,6 +567,53 @@ export default function Post() {
                 __html: marked.parse(post.content, { breaks: true, gfm: true }),
               }}
             />
+            
+            {/* CSS personalizado para os elementos que causavam erro */}
+            <style>{`
+              .prose blockquote::before {
+                content: '"';
+                position: absolute;
+                left: -0.5rem;
+                top: -1rem;
+                font-size: 8rem;
+                color: rgba(212, 175, 55, 0.2);
+                font-family: serif;
+                line-height: 1;
+                pointer-events: none;
+                z-index: 0;
+              }
+              
+              .prose hr::before {
+                content: "⚖️";
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+                top: -0.75rem;
+                background: white;
+                padding: 0 1rem;
+                color: #d4af37;
+                font-size: 1rem;
+                z-index: 1;
+                white-space: nowrap;
+              }
+              
+              .prose blockquote {
+                position: relative;
+                overflow: hidden;
+              }
+              
+              .prose blockquote > * {
+                position: relative;
+                z-index: 1;
+              }
+              
+              .prose hr {
+                position: relative;
+                border-color: #e2e8f0;
+                margin: 4rem 0;
+                overflow: visible;
+              }
+            `}</style>
           </div>
 
           {/* Rodapé do artigo */}
