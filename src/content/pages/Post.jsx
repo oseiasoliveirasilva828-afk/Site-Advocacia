@@ -60,24 +60,16 @@ export default function Post() {
 
   function renderMarkdown(content) {
     if (!content) return '';
-    marked.setOptions({
-      breaks: true,
-      gfm: true
-    });
+    marked.setOptions({ breaks: true, gfm: true });
     return marked.parse(content);
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-center">
-          <div className="relative">
-            <div className="w-20 h-20 border-4 border-accent/30 border-t-accent rounded-full animate-spin"></div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-accent text-2xl">⚖️</span>
-            </div>
-          </div>
-          <p className="text-white/70 mt-6 font-light tracking-wide">Carregando artigo...</p>
+          <div className="w-12 h-12 border-2 border-gray-300 border-t-black rounded-full animate-spin mx-auto"></div>
+          <p className="text-gray-500 mt-4 text-sm">Carregando artigo...</p>
         </div>
       </div>
     );
@@ -85,18 +77,12 @@ export default function Post() {
 
   if (!post) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800">
-        <div className="text-center text-white max-w-md px-6">
-          <span className="text-7xl mb-6 block opacity-50">📄</span>
-          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-accent to-white bg-clip-text text-transparent">
-            Artigo não encontrado
-          </h1>
-          <p className="text-white/60 mb-8">O artigo que você procura pode ter sido removido ou ainda não foi publicado.</p>
-          <Link
-            to="/blog"
-            className="inline-flex items-center gap-2 bg-accent text-primary px-8 py-4 rounded-full font-semibold hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-accent/25"
-          >
-            <span>←</span> Explorar artigos
+      <div className="min-h-screen flex items-center justify-center bg-white px-6">
+        <div className="text-center max-w-md">
+          <h1 className="text-2xl font-light text-gray-800 mb-2">Artigo não encontrado</h1>
+          <p className="text-gray-400 text-sm mb-6">O link pode estar quebrado ou o artigo foi removido.</p>
+          <Link to="/blog" className="text-sm text-black border-b border-black pb-0.5 hover:opacity-60 transition">
+            ← Voltar ao blog
           </Link>
         </div>
       </div>
@@ -104,134 +90,93 @@ export default function Post() {
   }
 
   return (
-    <div className="min-h-screen bg-white font-sans">
+    <div className="bg-white font-sans antialiased text-gray-900">
       <Header siteName={content.siteName} oab={content.oab} whatsapp={content.whatsapp} />
 
-      {/* Hero Section com overlay moderno */}
-      <div className="relative h-[70vh] min-h-[600px] overflow-hidden">
-        {post.data.image ? (
-          <>
-            <img
-              src={post.data.image}
-              alt={post.data.title}
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent" />
-          </>
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-primary to-secondary" />
-        )}
-        
-        <div className="absolute bottom-0 left-0 right-0 container-custom pb-20 text-white">
-          <Link
-            to="/blog"
-            className="inline-flex items-center gap-2 text-white/70 hover:text-accent mb-8 transition-colors group"
-          >
-            <span className="group-hover:-translate-x-1 transition-transform">←</span>
-            <span>Ver todos os artigos</span>
-          </Link>
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight max-w-4xl mb-6">
-            {post.data.title}
-          </h1>
-          <div className="flex flex-wrap items-center gap-4 text-white/80">
-            <span className="flex items-center gap-2">
-              <span className="text-accent">📅</span>
-              {new Date(post.data.date).toLocaleDateString('pt-BR', {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric'
-              })}
-            </span>
-            <span className="w-1 h-1 bg-white/40 rounded-full" />
-            <span className="flex items-center gap-2">
-              <span className="text-accent">⏱️</span>
-              {Math.ceil(post.content.split(' ').length / 200)} min de leitura
-            </span>
-            {post.data.category && (
-              <>
-                <span className="w-1 h-1 bg-white/40 rounded-full" />
-                <span className="px-4 py-1 bg-accent/20 rounded-full text-accent text-sm font-medium">
-                  {post.data.category}
-                </span>
-              </>
-            )}
-          </div>
+      {/* Imagem de abertura — se houver */}
+      {post.data.image && (
+        <div className="w-full h-[60vh] min-h-[500px] overflow-hidden bg-black/5">
+          <img
+            src={post.data.image}
+            alt={post.data.title}
+            className="w-full h-full object-cover"
+          />
         </div>
-      </div>
+      )}
 
-      {/* Conteúdo principal com design clean e espaçoso */}
-      <main className="max-w-4xl mx-auto px-6 py-20">
-        {/* Autor e metadados em destaque */}
-        <div className="flex items-center gap-6 mb-16 p-8 bg-slate-50 rounded-2xl">
-          <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center text-white text-3xl shadow-lg">
-            {post.data.author?.[0] || '👤'}
-          </div>
-          <div className="flex-1">
-            <p className="text-sm text-accent font-medium tracking-wider mb-1">AUTOR</p>
-            <p className="text-xl font-semibold text-slate-800">{post.data.author || content.siteName}</p>
-          </div>
-          {post.data.description && (
-            <div className="hidden md:block text-right">
-              <p className="text-sm text-slate-500">Resumo</p>
-              <p className="text-slate-600 max-w-xs">{post.data.description.substring(0, 80)}...</p>
-            </div>
+      {/* Área principal do artigo */}
+      <main className="max-w-3xl mx-auto px-6 py-16 md:py-24">
+        {/* Breadcrumb */}
+        <Link
+          to="/blog"
+          className="inline-block text-sm text-gray-400 hover:text-black transition-colors mb-12"
+        >
+          ← Todos os artigos
+        </Link>
+
+        {/* Título */}
+        <h1 className="text-4xl md:text-5xl font-light tracking-tight text-gray-900 leading-tight mb-6">
+          {post.data.title}
+        </h1>
+
+        {/* Metadados */}
+        <div className="flex items-center gap-4 text-sm text-gray-500 border-b border-gray-100 pb-8 mb-10">
+          <time dateTime={post.data.date}>
+            {new Date(post.data.date).toLocaleDateString('pt-BR', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric'
+            })}
+          </time>
+          <span className="w-1 h-1 bg-gray-300 rounded-full" />
+          <span>{Math.ceil(post.content.split(' ').length / 200)} min de leitura</span>
+          {post.data.category && (
+            <>
+              <span className="w-1 h-1 bg-gray-300 rounded-full" />
+              <span className="text-gray-600">{post.data.category}</span>
+            </>
           )}
         </div>
 
-        {/* Descrição completa (se houver) */}
+        {/* Descrição (se houver) */}
         {post.data.description && (
-          <div className="mb-16 p-8 bg-gradient-to-r from-accent/5 to-transparent border-l-4 border-accent rounded-r-2xl">
-            <p className="text-xl text-slate-700 leading-relaxed font-light italic">
-              {post.data.description}
-            </p>
+          <div className="mb-12 text-lg text-gray-500 border-l-2 border-gray-300 pl-6 italic">
+            {post.data.description}
           </div>
         )}
 
-        {/* Artigo com tipografia refinada */}
+        {/* Corpo do artigo */}
         <article
           className="
             prose prose-lg max-w-none
-            prose-headings:text-slate-800 prose-headings:font-bold prose-headings:tracking-tight
-            prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl
-            prose-p:text-slate-600 prose-p:leading-relaxed prose-p:mb-8
-            prose-a:text-accent prose-a:no-underline hover:prose-a:underline prose-a:transition-all
-            prose-strong:text-slate-800 prose-strong:font-semibold
-            prose-ul:list-disc prose-ol:list-decimal prose-li:text-slate-600
-            prose-blockquote:border-l-4 prose-blockquote:border-accent prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-slate-600 prose-blockquote:bg-slate-50 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:rounded-r-2xl
-            prose-img:rounded-2xl prose-img:shadow-xl prose-img:mx-auto
-            prose-hr:border-slate-200
+            prose-headings:font-light prose-headings:text-gray-800
+            prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl
+            prose-p:text-gray-600 prose-p:leading-relaxed prose-p:mb-6
+            prose-a:text-black prose-a:border-b prose-a:border-gray-300 prose-a:no-underline hover:prose-a:border-black
+            prose-strong:text-gray-800 prose-strong:font-medium
+            prose-ul:list-disc prose-ol:list-decimal prose-li:text-gray-600
+            prose-blockquote:border-l-2 prose-blockquote:border-gray-300 prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-gray-500
+            prose-img:rounded-lg prose-img:shadow-md prose-img:mx-auto
+            prose-hr:border-gray-200
           "
           dangerouslySetInnerHTML={{ __html: renderMarkdown(post.content) }}
         />
 
-        {/* Navegação elegante entre artigos */}
-        <div className="mt-20 pt-12 border-t border-slate-200">
-          <div className="flex justify-between items-center">
-            <Link
-              to="/blog"
-              className="group flex items-center gap-3 text-slate-600 hover:text-accent transition-colors"
-            >
-              <span className="p-3 bg-slate-100 rounded-full group-hover:bg-accent/10 transition-colors">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </span>
-              <span className="font-medium">Todos os artigos</span>
-            </Link>
-            
-            <button
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="group flex items-center gap-3 text-slate-400 hover:text-accent transition-colors"
-            >
-              <span className="font-medium">Voltar ao topo</span>
-              <span className="p-3 bg-slate-100 rounded-full group-hover:bg-accent/10 transition-colors">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                </svg>
-              </span>
-            </button>
-          </div>
-        </div>
+        {/* Rodapé do artigo */}
+        <footer className="mt-20 pt-8 border-t border-gray-100 flex justify-between items-center text-sm">
+          <Link
+            to="/blog"
+            className="text-gray-400 hover:text-black transition-colors flex items-center gap-1"
+          >
+            ← Voltar ao blog
+          </Link>
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="text-gray-400 hover:text-black transition-colors flex items-center gap-1"
+          >
+            <span>↑</span> Início
+          </button>
+        </footer>
       </main>
 
       <WhatsAppButton whatsapp={content.whatsapp} />
