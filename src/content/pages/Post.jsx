@@ -8,6 +8,27 @@ import WhatsAppButton from '../components/WhatsAppButton';
 import { loadContent } from '/src/utils/contentLoader';
 import '../styles/animations.css';
 
+// ----------------------------------------------------------------------
+// Helper: parseFrontmatter (mantido igual)
+// ----------------------------------------------------------------------
+function parseFrontmatter(text) {
+  const match = text.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+  if (!match) return { data: {}, content: text };
+
+  const data = {};
+  match[1].split('\n').forEach((line) => {
+    if (line.includes(': ')) {
+      const [key, ...value] = line.split(': ');
+      data[key.trim()] = value.join(': ').trim();
+    }
+  });
+
+  return { data, content: match[2] };
+}
+
+// ----------------------------------------------------------------------
+// Componente principal
+// ----------------------------------------------------------------------
 export default function Post() {
   const { slug } = useParams();
   const [post, setPost] = useState(null);
@@ -15,7 +36,7 @@ export default function Post() {
   const [content, setContent] = useState({
     siteName: 'Dr. Carlos Silva',
     oab: 'OAB/SP 123.456',
-    whatsapp: '5511999999999'
+    whatsapp: '5511999999999',
   });
 
   useEffect(() => {
@@ -28,8 +49,8 @@ export default function Post() {
 
         if (response.ok) {
           const text = await response.text();
-          const { data, content } = parseFrontmatter(text);
-          setPost({ slug, data, content });
+          const { data, content: markdownContent } = parseFrontmatter(text);
+          setPost({ slug, data, content: markdownContent });
         } else {
           setPost(null);
         }
@@ -44,45 +65,17 @@ export default function Post() {
     loadData();
   }, [slug]);
 
-  function parseFrontmatter(text) {
-    const match = text.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-    if (!match) return { data: {}, content: text };
-
-    const data = {};
-    match[1].split('\n').forEach((line) => {
-      if (line.includes(': ')) {
-        const [key, ...value] = line.split(': ');
-        data[key.trim()] = value.join(': ').trim();
-      }
-    });
-
-    return { data, content: match[2] };
-  }
-
-  function renderMarkdown(content) {
-    if (!content) return '';
-    marked.setOptions({
-      breaks: true,
-      gfm: true
-    });
-    return marked.parse(content);
-  }
-
-  // Animações
-  const fadeInUp = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.6 }
-  };
-
+  // --------------------------------------------------------------------
+  // Renderização condicional
+  // --------------------------------------------------------------------
   if (loading) {
     return (
       <div className="min-h-screen bg-navy-900 flex items-center justify-center">
         <div className="text-center">
-          {/* Loader luxuoso com efeito de ouro */}
+          {/* Loader sofisticado */}
           <div className="relative w-32 h-32 mx-auto mb-8">
-            <div className="absolute inset-0 border-2 border-gold-500/20 rounded-full"></div>
-            <div className="absolute inset-0 border-2 border-gold-500 border-t-transparent rounded-full animate-spin"></div>
+            <div className="absolute inset-0 border-2 border-gold-500/20 rounded-full" />
+            <div className="absolute inset-0 border-2 border-gold-500 border-t-transparent rounded-full animate-spin" />
             <div className="absolute inset-0 flex items-center justify-center">
               <span className="text-4xl text-gold-500">⚖️</span>
             </div>
@@ -101,13 +94,14 @@ export default function Post() {
   if (!post) {
     return (
       <div className="min-h-screen bg-navy-900">
+        {/* Header fixo */}
         <Header siteName={content.siteName} oab={content.oab} whatsapp={content.whatsapp} />
-        
-        {/* Banner decorativo */}
-        <div className="h-1 bg-gradient-to-r from-gold-500/0 via-gold-500 to-gold-500/0"></div>
-        
+
+        {/* Faixa dourada decorativa */}
+        <div className="h-1 bg-gradient-to-r from-gold-500/0 via-gold-500 to-gold-500/0" />
+
         <div className="flex items-center justify-center px-4 py-20">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="max-w-2xl text-center"
@@ -115,11 +109,11 @@ export default function Post() {
             <div className="w-40 h-40 mx-auto mb-8 bg-navy-800 rounded-full flex items-center justify-center border-2 border-gold-500/30">
               <span className="text-6xl text-gold-500">📜</span>
             </div>
-            
+
             <h1 className="text-5xl font-serif font-bold text-gold-500 mb-4">
               Artigo não encontrado
             </h1>
-            
+
             <p className="text-xl text-navy-300 mb-12 font-light">
               O artigo que você procura pode ter sido removido ou ainda não foi publicado.
             </p>
@@ -133,7 +127,7 @@ export default function Post() {
             </Link>
           </motion.div>
         </div>
-        
+
         <Footer
           siteName={content.siteName}
           oab={content.oab}
@@ -146,25 +140,32 @@ export default function Post() {
     );
   }
 
+  // --------------------------------------------------------------------
+  // Post encontrado
+  // --------------------------------------------------------------------
+  const readingTime = Math.ceil(post.content.split(' ').length / 200);
+
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="min-h-screen bg-navy-50"
     >
-      {/* HEADER IMPONENTE - Mantido e integrado */}
-      <Header siteName={content.siteName} oab={content.oab} whatsapp={content.whatsapp} />
-      
-      {/* Faixa dourada decorativa abaixo do header */}
-      <div className="relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-gold-500/0 via-gold-500/20 to-gold-500/0 h-px"></div>
-        <div className="h-12 bg-gradient-to-b from-navy-900/5 to-transparent"></div>
+      {/* HEADER FIXO COM SOMBRA E EFEITO DE VIDRO */}
+      <div className="sticky top-0 z-50 backdrop-blur-md bg-white/90 border-b border-navy-200 shadow-lg">
+        <Header siteName={content.siteName} oab={content.oab} whatsapp={content.whatsapp} />
       </div>
 
-      {/* Main content com padding ajustado */}
+      {/* Faixa dourada decorativa abaixo do header */}
+      <div className="relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-gold-500/0 via-gold-500/20 to-gold-500/0 h-px" />
+        <div className="h-12 bg-gradient-to-b from-navy-900/5 to-transparent" />
+      </div>
+
+      {/* Conteúdo principal */}
       <main className="container-custom max-w-5xl py-16">
-        {/* Breadcrumb elegante */}
-        <motion.div 
+        {/* Breadcrumb */}
+        <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           className="mb-12"
@@ -173,48 +174,50 @@ export default function Post() {
             to="/blog"
             className="inline-flex items-center gap-3 text-navy-600 hover:text-gold-600 transition-colors group text-sm uppercase tracking-wider font-medium"
           >
-            <span className="w-8 h-px bg-gold-500/50 group-hover:w-12 transition-all"></span>
-            <span className="group-hover:translate-x-1 transition-transform">Voltar para artigos</span>
+            <span className="w-8 h-px bg-gold-500/50 group-hover:w-12 transition-all" />
+            <span className="group-hover:translate-x-1 transition-transform">
+              Voltar para artigos
+            </span>
           </Link>
         </motion.div>
 
-        {/* Card principal com efeito de pergaminho */}
-        <motion.div
+        {/* Card principal com textura de pergaminho */}
+        <motion.article
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           className="bg-white rounded-sm shadow-2xl border border-navy-200 relative overflow-hidden"
         >
-          {/* Textura de pergaminho */}
-          <div className="absolute inset-0 opacity-5 pointer-events-none"
-            style={{ 
+          {/* Textura de fundo (pergaminho) */}
+          <div
+            className="absolute inset-0 opacity-5 pointer-events-none"
+            style={{
               backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.5'/%3E%3C/svg%3E")`,
             }}
-          ></div>
+          />
 
           {/* Cantos dourados decorativos */}
-          <div className="absolute top-0 left-0 w-32 h-32 border-t-4 border-l-4 border-gold-500/20 rounded-tl-sm"></div>
-          <div className="absolute top-0 right-0 w-32 h-32 border-t-4 border-r-4 border-gold-500/20 rounded-tr-sm"></div>
-          <div className="absolute bottom-0 left-0 w-32 h-32 border-b-4 border-l-4 border-gold-500/20 rounded-bl-sm"></div>
-          <div className="absolute bottom-0 right-0 w-32 h-32 border-b-4 border-r-4 border-gold-500/20 rounded-br-sm"></div>
+          <div className="absolute top-0 left-0 w-32 h-32 border-t-4 border-l-4 border-gold-500/20 rounded-tl-sm" />
+          <div className="absolute top-0 right-0 w-32 h-32 border-t-4 border-r-4 border-gold-500/20 rounded-tr-sm" />
+          <div className="absolute bottom-0 left-0 w-32 h-32 border-b-4 border-l-4 border-gold-500/20 rounded-bl-sm" />
+          <div className="absolute bottom-0 right-0 w-32 h-32 border-b-4 border-r-4 border-gold-500/20 rounded-br-sm" />
 
-          {/* Conteúdo */}
           <div className="relative px-8 md:px-20 py-16 md:py-20">
-            {/* Cabeçalho do artigo - ESTILO JURÍDICO IMPONENTE */}
-            <motion.div variants={fadeInUp} className="mb-16 text-center">
-              {/* Selo dourado superior */}
-              <motion.div 
+            {/* Cabeçalho do artigo */}
+            <header className="mb-16 text-center">
+              {/* Selo dourado animado */}
+              <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                transition={{ type: 'spring', stiffness: 200, damping: 20 }}
                 className="w-20 h-20 mx-auto mb-8 bg-navy-50 rounded-full flex items-center justify-center border-2 border-gold-500"
               >
                 <span className="text-3xl text-gold-600">⚖️</span>
               </motion.div>
 
-              {/* Categoria como brasão */}
+              {/* Categoria */}
               {post.data.category && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex justify-center mb-6"
@@ -225,20 +228,24 @@ export default function Post() {
                 </motion.div>
               )}
 
-              {/* Título com destaque */}
-              <motion.h1 
-                variants={fadeInUp}
+              {/* Título */}
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
                 className="text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-navy-900 mb-8 leading-tight"
               >
                 {post.data.title}
               </motion.h1>
 
-              {/* Linha decorativa dourada */}
-              <div className="w-32 h-px bg-gold-500/50 mx-auto mb-8"></div>
+              {/* Linha dourada */}
+              <div className="w-32 h-px bg-gold-500/50 mx-auto mb-8" />
 
-              {/* Metadados com selos */}
-              <motion.div 
-                variants={fadeInUp}
+              {/* Metadados */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
                 className="flex flex-wrap items-center justify-center gap-8 text-navy-700"
               >
                 {post.data.date && (
@@ -248,32 +255,36 @@ export default function Post() {
                       {new Date(post.data.date).toLocaleDateString('pt-BR', {
                         day: '2-digit',
                         month: 'long',
-                        year: 'numeric'
+                        year: 'numeric',
                       })}
                     </time>
                   </div>
                 )}
-                
-                <div className="w-px h-8 bg-navy-300"></div>
-                
+
+                <div className="w-px h-8 bg-navy-300" />
+
                 <div className="flex items-center gap-3">
                   <span className="text-gold-600 text-xl">⚖️</span>
-                  <span className="font-serif text-lg">{post.data.author || `Dr. ${content.siteName}`}</span>
+                  <span className="font-serif text-lg">
+                    {post.data.author || `Dr. ${content.siteName}`}
+                  </span>
                 </div>
-                
-                <div className="w-px h-8 bg-navy-300"></div>
-                
+
+                <div className="w-px h-8 bg-navy-300" />
+
                 <div className="flex items-center gap-3">
                   <span className="text-gold-600 text-xl">📋</span>
                   <span className="font-serif text-lg">{content.oab}</span>
                 </div>
               </motion.div>
-            </motion.div>
+            </header>
 
-            {/* Imagem de destaque com moldura */}
+            {/* Imagem de destaque */}
             {post.data.image && (
-              <motion.div 
-                variants={fadeInUp}
+              <motion.figure
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
                 className="mb-16 -mx-4 md:-mx-10"
               >
                 <div className="relative h-[500px] overflow-hidden border-8 border-white shadow-2xl">
@@ -281,29 +292,31 @@ export default function Post() {
                     src={post.data.image}
                     alt={post.data.title}
                     className="w-full h-full object-cover"
+                    loading="lazy"
                   />
-                  {/* Overlay sutil */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-navy-900/20 to-transparent"></div>
-                  
-                  {/* Moldura decorativa */}
-                  <div className="absolute inset-0 border border-gold-500/30 pointer-events-none"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-navy-900/20 to-transparent" />
+                  <div className="absolute inset-0 border border-gold-500/30 pointer-events-none" />
                 </div>
-              </motion.div>
+              </motion.figure>
             )}
 
             {/* Descrição em destaque */}
             {post.data.description && (
-              <motion.div 
-                variants={fadeInUp}
+              <motion.blockquote
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
                 className="mb-16 p-10 bg-navy-50 border-l-8 border-gold-500 italic text-navy-800 text-xl leading-relaxed"
               >
                 "{post.data.description}"
-              </motion.div>
+              </motion.blockquote>
             )}
 
-            {/* Artigo com tipografia jurídica refinada */}
-            <motion.article
-              variants={fadeInUp}
+            {/* Conteúdo do artigo (Markdown) */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
               className="prose prose-lg max-w-none
                 prose-headings:font-serif prose-headings:text-navy-900 prose-headings:font-bold
                 prose-h1:text-4xl prose-h1:mt-20 prose-h1:mb-10 prose-h1:text-center
@@ -320,47 +333,54 @@ export default function Post() {
                 prose-blockquote:not-italic prose-blockquote:text-navy-700 prose-blockquote:font-serif prose-blockquote:text-xl
                 prose-img:rounded-none prose-img:shadow-2xl prose-img:my-16 prose-img:border-4 prose-img:border-white
                 prose-hr:border-navy-200 prose-hr:my-20"
-              dangerouslySetInnerHTML={{ __html: renderMarkdown(post.content) }}
+              dangerouslySetInnerHTML={{
+                __html: marked.parse(post.content, { breaks: true, gfm: true }),
+              }}
             />
 
-            {/* Tempo de leitura - como nota de rodapé */}
-            <motion.div 
-              variants={fadeInUp}
+            {/* Tempo de leitura */}
+            <motion.footer
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
               className="mt-16 text-center"
             >
               <span className="text-sm text-navy-500 font-mono tracking-wider bg-navy-50 px-6 py-3">
-                ⏱️ TEMPO DE LEITURA: {Math.ceil(post.content.split(' ').length / 200)} MINUTOS
+                ⏱️ TEMPO DE LEITURA: {readingTime} MINUTOS
               </span>
-            </motion.div>
+            </motion.footer>
 
             {/* Selo de autenticidade */}
-            <motion.div 
-              variants={fadeInUp}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
               className="mt-20 pt-12 border-t-2 border-navy-200 text-center"
             >
               <div className="inline-block p-8 bg-navy-50 border border-gold-500/30">
                 <div className="flex flex-col items-center gap-4">
-                  <motion.div 
+                  <motion.div
                     whileHover={{ rotate: 360 }}
                     transition={{ duration: 0.8 }}
                     className="w-24 h-24 bg-navy-900 rounded-full flex items-center justify-center border-4 border-gold-500"
                   >
                     <span className="text-4xl text-gold-500">⚖️</span>
                   </motion.div>
-                  
+
                   <div>
                     <p className="font-serif text-2xl text-navy-900 mb-2">{content.siteName}</p>
                     <p className="text-navy-600 mb-1 font-mono text-sm">{content.oab}</p>
                     <p className="text-xs text-navy-400 tracking-wider">ADVOGADO • OAB/SP</p>
                   </div>
-                  
+
                   {post.data.date && (
                     <div className="mt-4 pt-4 border-t border-navy-200 w-full">
                       <p className="text-sm text-navy-500 font-serif">
-                        Publicado em {new Date(post.data.date).toLocaleDateString('pt-BR', {
+                        Publicado em{' '}
+                        {new Date(post.data.date).toLocaleDateString('pt-BR', {
                           day: '2-digit',
                           month: 'long',
-                          year: 'numeric'
+                          year: 'numeric',
                         })}
                       </p>
                     </div>
@@ -369,25 +389,29 @@ export default function Post() {
               </div>
             </motion.div>
 
-            {/* Navegação com estilo */}
-            <motion.div 
-              variants={fadeInUp}
+            {/* Navegação inferior */}
+            <motion.nav
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
               className="mt-16 pt-8 border-t-2 border-navy-200 flex justify-between items-center"
             >
               <Link
                 to="/blog"
                 className="group inline-flex items-center gap-3 text-navy-600 hover:text-gold-600 transition-colors"
               >
-                <span className="w-8 h-px bg-gold-500/50 group-hover:w-12 transition-all"></span>
-                <span className="font-serif text-lg group-hover:translate-x-1 transition-transform">Todos os artigos</span>
+                <span className="w-8 h-px bg-gold-500/50 group-hover:w-12 transition-all" />
+                <span className="font-serif text-lg group-hover:translate-x-1 transition-transform">
+                  Todos os artigos
+                </span>
               </Link>
 
-              <button 
+              <button
                 onClick={() => {
                   if (navigator.share) {
                     navigator.share({
                       title: post.data.title,
-                      url: window.location.href
+                      url: window.location.href,
                     });
                   } else {
                     navigator.clipboard.writeText(window.location.href);
@@ -395,15 +419,16 @@ export default function Post() {
                 }}
                 className="group inline-flex items-center gap-3 text-navy-600 hover:text-gold-600 transition-colors"
               >
-                <span className="font-serif text-lg group-hover:-translate-x-1 transition-transform">Compartilhar</span>
-                <span className="w-8 h-px bg-gold-500/50 group-hover:w-12 transition-all"></span>
+                <span className="font-serif text-lg group-hover:-translate-x-1 transition-transform">
+                  Compartilhar
+                </span>
+                <span className="w-8 h-px bg-gold-500/50 group-hover:w-12 transition-all" />
               </button>
-            </motion.div>
+            </motion.nav>
           </div>
-        </motion.div>
+        </motion.article>
 
-        {/* Espaçamento inferior */}
-        <div className="h-20"></div>
+        <div className="h-20" />
       </main>
 
       <WhatsAppButton whatsapp={content.whatsapp} />
