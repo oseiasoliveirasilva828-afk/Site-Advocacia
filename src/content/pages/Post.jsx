@@ -211,16 +211,16 @@ export default function Post() {
         <div className="absolute bottom-20 right-10 w-80 h-80 bg-primary/20 rounded-full blur-3xl animate-pulse delay-700"></div>
       </section>
 
-      {/* Main Content - ÁREA DE LEITURA MELHORADA */}
+      {/* Main Content */}
       <main className="container-custom max-w-4xl py-20">
-        {/* Card de leitura com fundo especial */}
+        {/* Card de leitura */}
         <div className="relative">
           {/* Textura de papel */}
           <div className="absolute inset-0 opacity-5 pointer-events-none" style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.5'/%3E%3C/svg%3E")`,
           }}></div>
 
-          {/* Barra de progresso de leitura */}
+          {/* Barra de progresso */}
           <div className="sticky top-20 z-30 w-full h-1 bg-gray-200 rounded-full mb-12 overflow-hidden">
             <div 
               className="h-full bg-accent rounded-full transition-all duration-300"
@@ -229,69 +229,32 @@ export default function Post() {
             ></div>
           </div>
 
-          {/* Artigo com tipografia refinada para leitura */}
-          <article className="
-            prose prose-lg max-w-none
-            prose-headings:font-serif prose-headings:text-primary prose-headings:font-bold prose-headings:tracking-tight
+          {/* Artigo */}
+          <article className="prose prose-lg max-w-none
+            prose-headings:font-serif prose-headings:text-primary prose-headings:font-bold
             prose-h1:text-4xl prose-h1:mt-20 prose-h1:mb-10 prose-h1:text-center prose-h1:relative
             prose-h1:after:content-[''] prose-h1:after:block prose-h1:after:w-24 prose-h1:after:h-1 prose-h1:after:bg-accent/30 prose-h1:after:mx-auto prose-h1:after:mt-6
-            prose-h2:text-3xl prose-h2:mt-16 prose-h2:mb-8 prose-h2:pb-3 prose-h2:border-b-2 prose-h2:border-accent/20 prose-h2:font-serif
-            prose-h3:text-2xl prose-h3:mt-12 prose-h3:mb-6 prose-h3:text-primary/90 prose-h3:font-serif
-            prose-p:text-gray-700 prose-p:leading-[1.9] prose-p:mb-8 prose-p:text-justify prose-p:text-lg prose-p:font-light
-            prose-p:first-letter:text-5xl prose-p:first-letter:text-accent prose-p:first-letter:font-serif prose-p:first-letter:mr-3 prose-p:first-letter:float-left prose-p:first-letter:leading-[0.8]
-            prose-a:text-accent hover:prose-a:text-accent/80 prose-a:no-underline hover:prose-a:underline prose-a:transition-all prose-a:font-medium
-            prose-strong:text-primary prose-strong:font-semibold prose-strong:bg-accent/5 prose-strong:px-1 prose-strong:rounded
-            prose-ul:list-disc prose-ul:pl-8 prose-ul:my-10 prose-ul:space-y-3
-            prose-ol:list-decimal prose-ol:pl-8 prose-ol:my-10 prose-ol:space-y-3
-            prose-li:text-gray-700 prose-li:marker:text-accent prose-li:text-lg prose-li:font-light prose-li:leading-relaxed
+            prose-h2:text-3xl prose-h2:mt-16 prose-h2:mb-8 prose-h2:pb-3 prose-h2:border-b-2 prose-h2:border-accent/20
+            prose-h3:text-2xl prose-h3:mt-12 prose-h3:mb-6
+            prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-8 prose-p:text-justify prose-p:text-lg prose-p:font-light
+            prose-p:first-letter:text-5xl prose-p:first-letter:text-accent prose-p:first-letter:font-serif prose-p:first-letter:mr-3 prose-p:first-letter:float-left
+            prose-a:text-accent hover:prose-a:text-accent/80 prose-a:no-underline hover:prose-a:underline
+            prose-strong:text-primary prose-strong:font-semibold
+            prose-ul:list-disc prose-ul:pl-8 prose-ul:my-10
+            prose-ol:list-decimal prose-ol:pl-8 prose-ol:my-10
+            prose-li:text-gray-700 prose-li:marker:text-accent prose-li:text-lg
             prose-blockquote:border-l-4 prose-blockquote:border-accent prose-blockquote:bg-white prose-blockquote:shadow-md
             prose-blockquote:py-6 prose-blockquote:px-8 prose-blockquote:rounded-r-2xl prose-blockquote:my-12
-            prose-blockquote:not-italic prose-blockquote:text-gray-600 prose-blockquote:font-serif prose-blockquote:text-xl prose-blockquote:relative
-            prose-blockquote:before:content-['"'] prose-blockquote:before:text-6xl prose-blockquote:before:text-accent/20 prose-blockquote:before:absolute prose-blockquote:before:-top-4 prose-blockquote:before:left-2
-            prose-img:rounded-2xl prose-img:shadow-2xl prose-img:my-16 prose-img:border-8 prose-img:border-white prose-img:transition-transform prose-img:duration-700 hover:prose-img:scale-[1.02]
+            prose-blockquote:not-italic prose-blockquote:text-gray-600 prose-blockquote:font-serif prose-blockquote:text-xl
+            prose-img:rounded-2xl prose-img:shadow-2xl prose-img:my-16 prose-img:border-8 prose-img:border-white
             prose-hr:border-t-2 prose-hr:border-accent/20 prose-hr:my-20 prose-hr:relative
-            prose-hr:after:content-['⚖️'] prose-hr:after:absolute prose-hr:after:left-1/2 prose-hr:after:-top-3 prose-hr:after:-translate-x-1/2 prose-hr:after:bg-white prose-hr:after:px-4 prose-hr:after:text-accent
-            prose-table:w-full prose-table:my-12 prose-table:border-collapse
-            prose-th:bg-primary/5 prose-th:text-primary prose-th:font-semibold prose-th:p-4 prose-th:border prose-th:border-gray-200
-            prose-td:p-4 prose-td:border prose-td:border-gray-200 prose-td:text-gray-600
-            prose-code:text-accent prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-mono
-            prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-pre:p-6 prose-pre:rounded-2xl prose-pre:shadow-xl prose-pre:my-12 prose-pre:overflow-x-auto
-            "
+            prose-hr:after:content-['⚖️'] prose-hr:after:absolute prose-hr:after:left-1/2 prose-hr:after:-top-3 prose-hr:after:-translate-x-1/2 prose-hr:after:bg-white prose-hr:after:px-4
+            prose-code:text-accent prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm
+            prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-pre:p-6 prose-pre:rounded-2xl prose-pre:shadow-xl prose-pre:my-12"
             dangerouslySetInnerHTML={{ __html: renderMarkdown(post.content) }}
           />
 
-          {/* Sumário/Tópicos (se houver) */}
-          {post.content.includes('#') && (
-            <div className="mt-20 p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
-              <h4 className="text-xl font-serif font-bold text-primary mb-6 flex items-center gap-3">
-                <span className="w-10 h-10 bg-accent/10 rounded-full flex items-center justify-center">
-                  📑
-                </span>
-                Neste artigo
-              </h4>
-              <div className="grid md:grid-cols-2 gap-3">
-                {post.content.match(/^#{2,3}\s+(.+)$/gm)?.map((heading, index) => (
-                  <a
-                    key={index}
-                    href={`#${heading.replace(/^#+\s+/, '').toLowerCase().replace(/\s+/g, '-')}`}
-                    className="flex items-center gap-2 text-gray-600 hover:text-accent transition-colors group"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      const element = document.getElementById(heading.replace(/^#+\s+/, '').toLowerCase().replace(/\s+/g, '-'));
-                      if (element) {
-                        element.scrollIntoView({ behavior: 'smooth' });
-                      }
-                    }}
-                  >
-                    <span className="w-2 h-2 bg-accent/50 rounded-full group-hover:bg-accent transition-colors"></span>
-                    <span className="font-medium">{heading.replace(/^#+\s+/, '')}</span>
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Destaques e citações */}
+          {/* Cards de destaque */}
           <div className="my-20 grid md:grid-cols-3 gap-6">
             <div className="bg-gradient-to-br from-primary/5 to-transparent p-6 rounded-2xl border border-primary/10">
               <div className="text-3xl mb-3">📊</div>
@@ -310,12 +273,17 @@ export default function Post() {
             </div>
           </div>
 
-          {/* Barra de ferramentas de leitura */}
+          {/* Barra de ferramentas */}
           <div className="sticky bottom-8 z-40 flex justify-center">
             <div className="bg-white/90 backdrop-blur-md shadow-xl rounded-full px-6 py-3 border border-gray-200 flex items-center gap-4">
               <button 
                 onClick={() => {
-                  document.querySelector('article').style.fontSize = 'larger';
+                  const article = document.querySelector('article');
+                  if (article) {
+                    const currentSize = window.getComputedStyle(article).fontSize;
+                    const currentSizeNum = parseFloat(currentSize);
+                    article.style.fontSize = (currentSizeNum + 2) + 'px';
+                  }
                 }}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                 title="Aumentar fonte"
@@ -324,7 +292,10 @@ export default function Post() {
               </button>
               <button 
                 onClick={() => {
-                  document.querySelector('article').style.fontSize = 'medium';
+                  const article = document.querySelector('article');
+                  if (article) {
+                    article.style.fontSize = '';
+                  }
                 }}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                 title="Fonte normal"
@@ -333,7 +304,12 @@ export default function Post() {
               </button>
               <button 
                 onClick={() => {
-                  document.querySelector('article').style.fontSize = 'smaller';
+                  const article = document.querySelector('article');
+                  if (article) {
+                    const currentSize = window.getComputedStyle(article).fontSize;
+                    const currentSizeNum = parseFloat(currentSize);
+                    article.style.fontSize = (currentSizeNum - 2) + 'px';
+                  }
                 }}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                 title="Diminuir fonte"
@@ -349,16 +325,6 @@ export default function Post() {
                 title="Imprimir/PDF"
               >
                 🖨️
-              </button>
-              <button 
-                onClick={() => {
-                  const article = document.querySelector('article');
-                  article.classList.toggle('dark-mode');
-                }}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                title="Modo escuro"
-              >
-                🌙
               </button>
             </div>
           </div>
@@ -380,7 +346,6 @@ export default function Post() {
               <div className="w-32 h-32 bg-primary rounded-2xl flex items-center justify-center shadow-xl group">
                 <span className="text-5xl text-accent group-hover:scale-110 transition-transform duration-500">⚖️</span>
               </div>
-              {/* Floating card */}
               <div className="absolute -bottom-4 -right-4 bg-white p-3 rounded-lg shadow-lg animate-float">
                 <p className="text-sm font-bold text-primary">{content.oab}</p>
               </div>
@@ -438,26 +403,24 @@ export default function Post() {
             Todos os artigos
           </Link>
 
-          <div className="flex gap-3">
-            <button 
-              onClick={() => {
-                if (navigator.share) {
-                  navigator.share({
-                    title: post.data.title,
-                    text: post.data.description,
-                    url: window.location.href
-                  });
-                } else {
-                  navigator.clipboard.writeText(window.location.href);
-                  alert('Link copiado!');
-                }
-              }}
-              className="group inline-flex items-center gap-2 px-6 py-3 bg-accent text-primary rounded-full font-bold hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
-            >
-              <span>Compartilhar</span>
-              <span className="group-hover:translate-x-1 transition-transform">📤</span>
-            </button>
-          </div>
+          <button 
+            onClick={() => {
+              if (navigator.share) {
+                navigator.share({
+                  title: post.data.title,
+                  text: post.data.description,
+                  url: window.location.href
+                });
+              } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Link copiado!');
+              }
+            }}
+            className="group inline-flex items-center gap-2 px-6 py-3 bg-accent text-primary rounded-full font-bold hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+          >
+            <span>Compartilhar</span>
+            <span className="group-hover:translate-x-1 transition-transform">📤</span>
+          </button>
         </div>
       </main>
 
@@ -478,7 +441,10 @@ export default function Post() {
             const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
             const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
             const scrolled = (winScroll / height) * 100;
-            document.getElementById('reading-progress').style.width = scrolled + '%';
+            const progressBar = document.getElementById('reading-progress');
+            if (progressBar) {
+              progressBar.style.width = scrolled + '%';
+            }
           });
         `
       }} />
