@@ -274,20 +274,17 @@ export default function Post() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-navy-900 flex items-center justify-center">
+      <div className="min-h-screen bg-primary flex items-center justify-center">
         <div className="text-center">
           <div className="relative w-32 h-32 mx-auto mb-8">
-            <div className="absolute inset-0 border-2 border-gold-500/20 rounded-full"></div>
-            <div className="absolute inset-0 border-2 border-gold-500 border-t-transparent rounded-full animate-spin"></div>
+            <div className="absolute inset-0 border-2 border-accent/20 rounded-full"></div>
+            <div className="absolute inset-0 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-4xl text-gold-500">⚖️</span>
+              <span className="text-4xl text-accent">⚖️</span>
             </div>
           </div>
-          <p className="text-gold-500/80 font-serif italic text-lg tracking-wide">
-            Carregando documento jurídico...
-          </p>
-          <p className="text-navy-300 text-sm mt-4 font-light">
-            {content.siteName} • {content.oab}
+          <p className="text-white/80 font-light tracking-wide">
+            Carregando artigo...
           </p>
         </div>
       </div>
@@ -296,7 +293,7 @@ export default function Post() {
 
   if (!post) {
     return (
-      <div className="min-h-screen bg-navy-900">
+      <div className="min-h-screen bg-primary">
         <Header siteName={content.siteName} oab={content.oab} whatsapp={content.whatsapp} />
         
         <div className="h-20"></div>
@@ -307,21 +304,21 @@ export default function Post() {
             animate={{ opacity: 1, y: 0 }}
             className="max-w-2xl text-center text-white"
           >
-            <div className="w-40 h-40 mx-auto mb-8 bg-navy-800 rounded-full flex items-center justify-center border-2 border-gold-500/30">
-              <span className="text-6xl text-gold-500">📜</span>
+            <div className="w-40 h-40 mx-auto mb-8 bg-primary/80 rounded-full flex items-center justify-center border-2 border-accent/30">
+              <span className="text-6xl text-accent">📜</span>
             </div>
             
-            <h1 className="text-5xl font-serif font-bold text-gold-500 mb-4">
+            <h1 className="text-5xl font-bold text-accent mb-4">
               Artigo não encontrado
             </h1>
             
-            <p className="text-xl text-navy-300 mb-12 font-light">
+            <p className="text-xl text-white/70 mb-12 font-light">
               O artigo que você procura pode ter sido removido ou ainda não foi publicado.
             </p>
 
             <Link
               to="/blog"
-              className="inline-flex items-center gap-3 px-10 py-5 bg-gold-500 text-navy-900 font-serif text-lg hover:bg-gold-600 transition-all shadow-2xl hover:shadow-gold-500/20 group"
+              className="inline-flex items-center gap-3 px-10 py-5 bg-accent text-primary font-bold text-lg hover:bg-accent/90 transition-all shadow-2xl hover:shadow-accent/20 group"
             >
               <span className="group-hover:-translate-x-1 transition-transform">←</span>
               Voltar para o blog
@@ -342,82 +339,27 @@ export default function Post() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F9F7F4]">
-      {/* Header transparente original */}
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
       <Header siteName={content.siteName} oab={content.oab} whatsapp={content.whatsapp} />
       
       {/* Espaçamento para compensar o header fixo */}
       <div className="h-20"></div>
 
-      {/* HERO AZUL - DESTAQUE PARA O ARTIGO */}
-      <div className="bg-gradient-to-br from-navy-900 to-navy-800 text-white py-20 px-4">
-        <div className="container-custom max-w-4xl mx-auto text-center">
-          {/* Link de voltar (sutil) */}
-          <Link
-            to="/blog"
-            className="inline-flex items-center gap-2 text-white/60 hover:text-gold-500 mb-8 transition-colors group text-sm uppercase tracking-wider"
-          >
-            <span className="group-hover:-translate-x-1 transition-transform">←</span>
-            TODOS OS ARTIGOS
-          </Link>
-
-          {/* Categoria (se houver) */}
-          {post.data.category && (
-            <div className="mb-4">
-              <span className="text-xs font-bold tracking-[0.3em] uppercase text-gold-500">
-                {post.data.category}
-              </span>
-            </div>
-          )}
-
-          {/* Título principal */}
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-6 leading-tight">
-            {post.data.title}
-          </h1>
-
-          {/* Descrição (se houver) */}
-          {post.data.description && (
-            <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto font-light italic">
-              "{post.data.description}"
-            </p>
-          )}
-
-          {/* Metadados do artigo */}
-          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/70 pt-4 border-t border-white/10 max-w-2xl mx-auto">
-            {post.data.date && (
-              <time className="flex items-center gap-2">
-                <span className="text-gold-500">📅</span>
-                {new Date(post.data.date).toLocaleDateString('pt-BR', {
-                  day: '2-digit',
-                  month: 'long',
-                  year: 'numeric'
-                })}
-              </time>
-            )}
-            <span className="w-1 h-1 bg-white/20 rounded-full"></span>
-            <span className="flex items-center gap-2">
-              <span className="text-gold-500">⚖️</span>
-              {post.data.author || `Dr. ${content.siteName}`}
-            </span>
-            <span className="w-1 h-1 bg-white/20 rounded-full"></span>
-            <span className="flex items-center gap-2">
-              <span className="text-gold-500">📋</span>
-              {content.oab}
-            </span>
-            <span className="w-1 h-1 bg-white/20 rounded-full"></span>
-            <span className="flex items-center gap-2">
-              <span className="text-gold-500">⏱️</span>
-              {Math.ceil(post.content.split(' ').length / 200)} min
-            </span>
-          </div>
-        </div>
-      </div>
-
       {/* Conteúdo principal */}
-      <main className="container-custom max-w-3xl py-16">
+      <main className="container-custom max-w-4xl py-16">
+        {/* Navegação */}
+        <Link
+          to="/blog"
+          className="inline-flex items-center gap-2 text-gray-500 hover:text-accent mb-8 transition-colors group"
+        >
+          <span className="group-hover:-translate-x-1 transition-transform">←</span>
+          Todos os artigos
+        </Link>
+
         {/* Imagem de destaque (se houver) */}
         {post.data.image && (
-          <div className="mb-16">
+          <div className="mb-8">
             <img
               src={post.data.image}
               alt={post.data.title}
@@ -426,83 +368,151 @@ export default function Post() {
           </div>
         )}
 
-        {/* ARTIGO */}
+        {/* Cabeçalho do artigo */}
+        <div className="mb-8">
+          {post.data.category && (
+            <span className="text-sm text-accent font-semibold uppercase tracking-wider">
+              {post.data.category}
+            </span>
+          )}
+          <h1 className="text-4xl md:text-5xl font-bold text-primary mt-2 mb-4">
+            {post.data.title}
+          </h1>
+          {post.data.description && (
+            <p className="text-xl text-gray-600 mb-4 font-light border-l-4 border-accent/30 pl-4">
+              {post.data.description}
+            </p>
+          )}
+          <div className="flex items-center gap-4 text-sm text-gray-500">
+            {post.data.date && (
+              <time className="flex items-center gap-1">
+                <span>📅</span>
+                {new Date(post.data.date).toLocaleDateString('pt-BR', {
+                  day: '2-digit',
+                  month: 'long',
+                  year: 'numeric'
+                })}
+              </time>
+            )}
+            <span>•</span>
+            <span className="flex items-center gap-1">
+              <span>⚖️</span>
+              {post.data.author || `Dr. ${content.siteName}`}
+            </span>
+            <span>•</span>
+            <span className="flex items-center gap-1">
+              <span>📋</span>
+              {content.oab}
+            </span>
+            <span>•</span>
+            <span className="flex items-center gap-1">
+              <span>⏱️</span>
+              {Math.ceil(post.content.split(' ').length / 200)} min
+            </span>
+          </div>
+        </div>
+
+        {/* Artigo */}
         <article 
           ref={articleRef}
-          className="
-          prose prose-lg max-w-none
-          break-words
-          whitespace-pre-wrap
-          prose-headings:font-serif prose-headings:text-navy-900 prose-headings:font-bold
-          prose-h1:text-3xl prose-h1:mt-16 prose-h1:mb-8 prose-h1:pb-4 prose-h1:border-b-2 prose-h1:border-gold-500/20
-          prose-h2:text-2xl prose-h2:mt-14 prose-h2:mb-6 prose-h2:font-serif prose-h2:text-navy-900/90
-          prose-h2:before:content-[''] prose-h2:before:inline-block prose-h2:before:w-8 prose-h2:before:h-[2px] prose-h2:before:bg-gold-500/50 prose-h2:before:mr-4 prose-h2:before:align-middle
-          prose-h3:text-xl prose-h3:mt-10 prose-h3:mb-4 prose-h3:text-navy-900/80
-          prose-p:text-gray-700 prose-p:leading-[1.8] prose-p:mb-8 prose-p:text-lg prose-p:font-light
-          prose-h2 + p prose-p:first-line:font-semibold prose-p:first-line:text-navy-900
-          prose-a:text-gold-600 hover:prose-a:text-gold-500 prose-a:no-underline hover:prose-a:underline
-          prose-strong:text-navy-900 prose-strong:font-semibold
-          prose-ul:list-disc prose-ul:pl-8 prose-ul:my-8 prose-ul:space-y-2
-          prose-ol:list-decimal prose-ol:pl-8 prose-ol:my-8 prose-ol:space-y-2
-          prose-li:text-gray-700 prose-li:marker:text-gold-500
-          prose-blockquote:border-l-4 prose-blockquote:border-gold-500 prose-blockquote:bg-gray-50
-          prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:rounded-r-lg prose-blockquote:my-10
-          prose-code:text-gold-600 prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
-          prose-img:rounded-lg prose-img:shadow-md prose-img:my-12 prose-img:mx-auto
-          prose-hr:border-t-2 prose-hr:border-gray-200 prose-hr:my-16 prose-hr:w-24 prose-hr:mx-auto
-          "
+          className="prose prose-lg max-w-none
+            prose-headings:text-primary prose-headings:font-bold
+            prose-h1:text-3xl prose-h1:mt-12 prose-h1:mb-6
+            prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
+            prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
+            prose-p:text-gray-600 prose-p:leading-relaxed prose-p:mb-6
+            prose-a:text-accent prose-a:no-underline hover:prose-a:underline
+            prose-strong:text-primary
+            prose-ul:list-disc prose-ol:list-decimal
+            prose-blockquote:border-l-4 prose-blockquote:border-accent prose-blockquote:bg-gray-50 prose-blockquote:py-2 prose-blockquote:px-6 prose-blockquote:rounded-r-lg
+            prose-img:rounded-lg prose-img:shadow-md
+            break-words whitespace-pre-wrap"
         >
           <div dangerouslySetInnerHTML={{ __html: renderMarkdown(post.content) }} />
         </article>
 
-        {/* Notas e referências */}
-        <div className="mt-20 pt-8 border-t border-gray-200">
-          <div className="text-sm text-gray-500 space-y-4">
-            <p className="flex items-start gap-2">
-              <span className="text-gold-600 font-bold">[1]</span>
-              <span>Tribunal de Justiça do Estado do Piauí. IRDR n. 0759842-91.2020.8.18.0000, Rel. Des. Haroldo Oliveira Rehem, j. 19.06.2024.</span>
-            </p>
-            <p className="flex items-start gap-2">
-              <span className="text-gold-600 font-bold">[2]</span>
-              <span>TJPI. Súmulas 33 e 34, aprovadas na 141ª Sessão Ordinária Administrativa de 15.07.2024.</span>
-            </p>
-          </div>
-        </div>
-
-        {/* Bio do autor */}
-        <div className="mt-16 p-8 bg-white rounded-lg border border-gray-200 shadow-sm">
-          <div className="flex items-start gap-4">
-            <div className="w-16 h-16 bg-navy-900 rounded-full flex items-center justify-center flex-shrink-0">
-              <span className="text-3xl text-gold-500">⚖️</span>
-            </div>
-            <div>
-              <h4 className="font-serif font-bold text-navy-900 mb-1">{content.siteName}</h4>
-              <p className="text-sm text-gray-500 mb-2">{content.oab}</p>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                Advogado especialista em Direito do Consumidor e Direito Bancário. 
-                Membro da Comissão de Direito Bancário da OAB/SP. Autor de artigos 
-                jurídicos publicados em revistas especializadas.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Navegação entre artigos */}
+        {/* Ações do artigo */}
         <div className="mt-12 pt-6 border-t border-gray-200 flex justify-between items-center">
           <Link
             to="/blog"
-            className="inline-flex items-center gap-2 text-gray-500 hover:text-gold-600 transition-colors group"
+            className="inline-flex items-center gap-2 text-gray-500 hover:text-accent transition-colors group"
           >
             <span className="group-hover:-translate-x-1 transition-transform">←</span>
             Todos os artigos
           </Link>
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="inline-flex items-center gap-2 text-gray-500 hover:text-gold-600 transition-colors"
-          >
-            <span>Voltar ao topo</span>
-            <span>↑</span>
-          </button>
+          
+          <div className="flex items-center gap-2">
+            {/* Botão Compartilhar */}
+            <div className="relative">
+              <button
+                onClick={handleShare}
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:border-accent hover:text-accent transition-all shadow-sm"
+              >
+                <span>📤</span>
+                <span className="hidden sm:inline">Compartilhar</span>
+              </button>
+              
+              {/* Menu de compartilhamento */}
+              {showShareMenu && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
+                  <button
+                    onClick={copyToClipboard}
+                    className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 hover:text-accent flex items-center gap-3 transition-colors"
+                  >
+                    <span>🔗</span>
+                    Copiar link
+                  </button>
+                  <button
+                    onClick={shareOnWhatsApp}
+                    className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 hover:text-accent flex items-center gap-3 transition-colors"
+                  >
+                    <span>📱</span>
+                    WhatsApp
+                  </button>
+                  <button
+                    onClick={shareOnLinkedIn}
+                    className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 hover:text-accent flex items-center gap-3 transition-colors"
+                  >
+                    <span>💼</span>
+                    LinkedIn
+                  </button>
+                  <button
+                    onClick={shareOnTwitter}
+                    className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 hover:text-accent flex items-center gap-3 transition-colors"
+                  >
+                    <span>🐦</span>
+                    Twitter
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Botão Imprimir */}
+            <button
+              onClick={handlePrint}
+              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:border-accent hover:text-accent transition-all shadow-sm"
+            >
+              <span>🖨️</span>
+              <span className="hidden sm:inline">Imprimir</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Bio do autor */}
+        <div className="mt-12 p-6 bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+              <span className="text-2xl text-accent">⚖️</span>
+            </div>
+            <div>
+              <h4 className="font-bold text-primary mb-1">{content.siteName}</h4>
+              <p className="text-sm text-gray-500 mb-2">{content.oab}</p>
+              <p className="text-gray-600 text-sm">
+                Advogado especialista em Direito do Consumidor e Direito Bancário. 
+                Membro da Comissão de Direito Bancário da OAB/SP.
+              </p>
+            </div>
+          </div>
         </div>
       </main>
 
