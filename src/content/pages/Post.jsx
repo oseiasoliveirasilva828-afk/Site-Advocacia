@@ -340,16 +340,11 @@ export default function Post() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {/* Header - FICA ACIMA DA FAIXA AZUL */}
       <Header siteName={content.siteName} oab={content.oab} whatsapp={content.whatsapp} />
       
-      {/* Espaçamento para compensar o header fixo */}
-      <div className="h-20"></div>
-
-      {/* ========================================================= */}
-      {/* FAIXA AZUL SUPERIOR - IGUAL ÀS OUTRAS SEÇÕES DO SITE    */}
-      {/* ========================================================= */}
-      <div className="bg-primary py-16 border-b border-accent/20">
+      {/* FAIXA AZUL SUPERIOR - COM HEADER SOBREPOSTO */}
+      <div className="bg-primary pt-24 pb-16 border-b border-accent/20">
         <div className="container-custom text-center text-white">
           <div className="max-w-3xl mx-auto">
             <span className="text-accent font-semibold tracking-wider uppercase mb-4 inline-block">
