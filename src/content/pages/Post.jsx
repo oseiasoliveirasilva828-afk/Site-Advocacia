@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { marked } from 'marked';
 import { motion } from 'framer-motion';
-import Header from '../components/Header';
+import Header from '../components/Header'; // <- AGORA USA O MESMO HEADER DO BLOG
 import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
 import { loadContent } from '/src/utils/contentLoader';
@@ -54,7 +54,6 @@ export default function Post() {
         console.error('Erro ao carregar post:', error);
         setPost(null);
       } finally {
-        // Delay para mostrar a tela de carregamento
         setTimeout(() => {
           setLoading(false);
         }, 800);
@@ -64,14 +63,11 @@ export default function Post() {
     loadData();
   }, [slug]);
 
-  // ============================================
-  // CORREÇÃO PRINCIPAL: Configuração do marked
-  // ============================================
   function renderMarkdown(content) {
     if (!content) return '';
     marked.setOptions({
-      breaks: true,      // <-- Isso transforma quebras de linha em <br> (respeita o Enter)
-      gfm: true,         // <-- Suporte a tabelas, listas etc
+      breaks: true,
+      gfm: true,
       headerIds: true,
       mangle: false
     });
@@ -165,7 +161,7 @@ export default function Post() {
               font-size: 1.1rem;
               line-height: 1.9;
               color: #2C3E50;
-              word-wrap: break-word;      /* Quebra palavras longas */
+              word-wrap: break-word;
               overflow-wrap: break-word;
               white-space: normal;
             }
@@ -276,7 +272,6 @@ export default function Post() {
     setShowShareMenu(false);
   };
 
-  // TELA DE CARREGAMENTO IGUAL A DA HOME
   if (loading) {
     return (
       <div className="min-h-screen bg-navy-900 flex items-center justify-center">
@@ -348,50 +343,8 @@ export default function Post() {
 
   return (
     <div className="min-h-screen bg-[#F9F7F4]">
-      {/* HEADER COM AZUL ESCURO E HOVER IGUAL AO ORIGINAL */}
-      <div className="fixed top-0 left-0 right-0 z-50 transition-all duration-500 bg-blue-800 py-3 shadow-lg">
-        <div className="container-custom">
-          <div className="flex justify-between items-center">
-            {/* Logo com hover igual ao original */}
-            <Link to="/" className="relative group">
-              <h1 className="text-2xl font-bold text-white">
-                {content.siteName}
-              </h1>
-              <p className="text-sm text-white/80">
-                {content.oab}
-              </p>
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gold-500 transition-all duration-300 group-hover:w-full"></span>
-            </Link>
-            
-            {/* Menu com hover IGUAL ao original */}
-            <nav className="hidden md:flex items-center space-x-8">
-              {['Início', 'Artigos', 'Sobre', 'Contato'].map((item) => (
-                <Link
-                  key={item}
-                  to={item === 'Início' ? '/' : `/${item.toLowerCase()}`}
-                  className="relative text-white font-medium transition-all duration-300 hover:text-gold-500 group"
-                >
-                  {item}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gold-500 transition-all duration-300 group-hover:w-full"></span>
-                </Link>
-              ))}
-            </nav>
-
-            {/* Botão WhatsApp com animação */}
-            <a
-              href={`https://wa.me/${content.whatsapp}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden md:flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-6 py-2.5 rounded-full font-medium transition-all hover:scale-105 hover:shadow-lg animate-pulse-slow"
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771z"/>
-              </svg>
-              WhatsApp
-            </a>
-          </div>
-        </div>
-      </div>
+      {/* AGORA USA O COMPONENTE HEADER IGUAL AO BLOG */}
+      <Header siteName={content.siteName} oab={content.oab} whatsapp={content.whatsapp} />
       
       {/* Espaçamento para compensar o header fixo */}
       <div className="h-20"></div>
@@ -468,9 +421,7 @@ export default function Post() {
           </div>
         )}
 
-        {/* ========================================================= */}
-        {/* ARTIGO - COM CORREÇÃO DE QUEBRA DE LINHA               */}
-        {/* ========================================================= */}
+        {/* ARTIGO - COM CORREÇÃO DE QUEBRA DE LINHA */}
         <article 
           ref={articleRef}
           className="
