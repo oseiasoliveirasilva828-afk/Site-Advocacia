@@ -8,7 +8,7 @@ export default function AboutSection({ lawyerName, lawyerBio, lawyerPhoto, exper
             {/* Main Image */}
             <div className="relative z-10 rounded-2xl overflow-hidden shadow-2xl group">
               <img
-                src={lawyerPhoto || "https://images.unsplash.com/photo-1560251125-81499e9a88e0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"}
+                src={lawyerPhoto}
                 alt={lawyerName}
                 className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110"
               />
@@ -23,7 +23,7 @@ export default function AboutSection({ lawyerName, lawyerBio, lawyerPhoto, exper
             
             <div className="absolute -top-8 -left-8 bg-white p-6 rounded-xl shadow-2xl z-20 animate-float" style={{ animationDelay: '1s' }}>
               <p className="text-4xl font-bold text-primary">{cases}+</p>
-              <p className="text-gray-600">Casos resolvidos</p>
+              <p className="text-gray-600">Casos bem-sucedidos</p>
             </div>
 
             {/* Decorative elements */}
@@ -38,16 +38,16 @@ export default function AboutSection({ lawyerName, lawyerBio, lawyerPhoto, exper
             </div>
 
             <p className="text-gray-600 text-lg leading-relaxed">
-              {lawyerBio || 'Especialista em Direito Civil, Empresarial e Trabalhista, com mestrado pela USP e vasta experiência em casos complexos. Dedicado a oferecer soluções jurídicas personalizadas e eficientes para cada cliente.'}
+              {lawyerBio}
             </p>
 
             {/* Specializations Grid */}
             <div className="grid grid-cols-2 gap-4 pt-4">
               {(specializations || [
-                { icon: "👨‍👩‍👧‍👦", title: "Direito de Família" },
-                { icon: "💼", title: "Direito Trabalhista" },
-                { icon: "🏢", title: "Direito Empresarial" },
                 { icon: "⚖️", title: "Direito Civil" },
+                { icon: "📄", title: "Direito Trabalhista" },
+                { icon: "🔒", title: "Direito Criminal" },
+                { icon: "🏛️", title: "Direito Empresarial" }
               ]).map((spec, index) => (
                 <div
                   key={index}
@@ -67,13 +67,13 @@ export default function AboutSection({ lawyerName, lawyerBio, lawyerPhoto, exper
                 <svg className="w-6 h-6 text-accent" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                <span className="text-gray-700">OAB/SP 123.456</span>
+                <span className="text-gray-700">OAB/SP 344.956</span>
               </div>
               <div className="flex items-center gap-2">
                 <svg className="w-6 h-6 text-accent" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                <span className="text-gray-700">Membro da OAB desde 2010</span>
+                <span className="text-gray-700">Membro da OAB desde 2012</span>
               </div>
             </div>
           </div>

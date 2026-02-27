@@ -17,9 +17,9 @@ collections:
       - {label: "Categoria", name: "category", widget: "string", required: false}
       - {label: "Descrição", name: "description", widget: "text", required: false, hint: "Resumo que aparece na lista de artigos"}
       - {label: "Imagem de destaque", name: "image", widget: "image", required: false, hint: "Imagem que aparece no card do artigo"}
-      - {label: "Autor", name: "author", widget: "string", default: "Dr. Carlos Silva"}
+      - {label: "Autor", name: "author", widget: "string", default: "Edson Silva Maltez"}
 
-      # CAMPO PRINCIPAL DO ARTIGO — AGORA COM BARRA DE FERRAMENTAS
+      # CAMPO PRINCIPAL DO ARTIGO — COM BARRA DE FERRAMENTAS
       - label: "Conteúdo"
         name: "body"
         widget: "markdown"

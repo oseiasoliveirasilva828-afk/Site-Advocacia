@@ -12,6 +12,7 @@ export default function ContactSection({ phone, email, address, whatsapp, instag
     e.preventDefault();
     // Aqui você pode integrar com um serviço de email
     console.log('Form submitted:', formData);
+    alert('Mensagem enviada com sucesso! Em breve entraremos em contato.');
   };
 
   return (
@@ -23,7 +24,8 @@ export default function ContactSection({ phone, email, address, whatsapp, instag
             Entre em Contato
           </h2>
           <p className="text-white/80 text-lg">
-            Estamos prontos para atender você. Tire suas dúvidas ou agende uma consulta.
+            Estamos prontos para atender você. Tire suas dúvidas ou agende uma consulta 
+            através dos canais abaixo ou preenchendo o formulário.
           </p>
         </div>
 
@@ -53,8 +55,8 @@ export default function ContactSection({ phone, email, address, whatsapp, instag
               <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl hover:bg-white/20 transition-all group">
                 <div className="text-3xl mb-3 group-hover:scale-110 transition-transform">⏰</div>
                 <h3 className="font-semibold mb-2">Horário</h3>
-                <p className="text-white/70 text-sm">Seg - Sex: 9h às 18h</p>
-                <p className="text-white/70 text-sm">Sáb: 9h às 13h</p>
+                <p className="text-white/70 text-sm">Segunda a Sexta: 9h às 18h</p>
+                <p className="text-white/70 text-sm">Sábado: 9h às 13h</p>
               </div>
             </div>
 
@@ -102,7 +104,7 @@ export default function ContactSection({ phone, email, address, whatsapp, instag
             
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-gray-700 mb-2">Nome</label>
+                <label className="block text-gray-700 mb-2">Nome completo</label>
                 <input
                   type="text"
                   value={formData.name}
@@ -114,7 +116,7 @@ export default function ContactSection({ phone, email, address, whatsapp, instag
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-gray-700 mb-2">Email</label>
+                  <label className="block text-gray-700 mb-2">E-mail</label>
                   <input
                     type="email"
                     value={formData.email}
@@ -143,6 +145,7 @@ export default function ContactSection({ phone, email, address, whatsapp, instag
                   onChange={(e) => setFormData({...formData, message: e.target.value})}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition"
                   required
+                  placeholder="Descreva brevemente sua situação ou dúvida..."
                 ></textarea>
               </div>
 

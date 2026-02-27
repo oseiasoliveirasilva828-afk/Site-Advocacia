@@ -30,9 +30,12 @@ export default function Post() {
   const [showShareMenu, setShowShareMenu] = useState(false);
   const articleRef = useRef(null);
   const [content, setContent] = useState({
-    siteName: 'Dr. Carlos Silva',
-    oab: 'OAB/SP 123.456',
-    whatsapp: '5511999999999'
+    siteName: 'Edson Silva Maltez',
+    oab: 'OAB/SP 344.956',
+    whatsapp: '5519996319810',
+    phone: '(19) 99631-9810',
+    email: 'dredsonmaltez@gmail.com',
+    address: 'Rua Francisco Biancalana, 31 - sala 02 - Vila Santana, Sumaré - SP'
   });
 
   useEffect(() => {
@@ -384,7 +387,7 @@ export default function Post() {
           </div>
         )}
 
-        {/* Cabeçalho do artigo */}
+        {/* Cabeçalho do artigo - COM ÍCONES OFICIAIS */}
         <div className="mb-8">
           {post.data.category && (
             <span className="text-sm text-accent font-semibold uppercase tracking-wider">
@@ -402,28 +405,28 @@ export default function Post() {
           <div className="flex items-center gap-4 text-sm text-gray-500">
             {post.data.date && (
               <time className="flex items-center gap-1">
-                <span>📅</span>
-                {new Date(post.data.date).toLocaleDateString('pt-BR', {
+                <i className="far fa-calendar-alt text-accent"></i>
+                <span>{new Date(post.data.date).toLocaleDateString('pt-BR', {
                   day: '2-digit',
                   month: 'long',
                   year: 'numeric'
-                })}
+                })}</span>
               </time>
             )}
             <span>•</span>
             <span className="flex items-center gap-1">
-              <span>⚖️</span>
-              {post.data.author || `Dr. ${content.siteName}`}
+              <i className="fas fa-gavel text-accent"></i>
+              <span>{post.data.author || `Dr. ${content.siteName}`}</span>
             </span>
             <span>•</span>
             <span className="flex items-center gap-1">
-              <span>📋</span>
-              {content.oab}
+              <i className="fas fa-scroll text-accent"></i>
+              <span>{content.oab}</span>
             </span>
             <span>•</span>
             <span className="flex items-center gap-1">
-              <span>⏱️</span>
-              {Math.ceil(post.content.split(' ').length / 200)} min
+              <i className="far fa-clock text-accent"></i>
+              <span>{Math.ceil(post.content.split(' ').length / 200)} min</span>
             </span>
           </div>
         </div>
@@ -447,14 +450,14 @@ export default function Post() {
           <div dangerouslySetInnerHTML={{ __html: renderMarkdown(post.content) }} />
         </article>
 
-        {/* Ações do artigo */}
+        {/* Ações do artigo - COM ÍCONES OFICIAIS */}
         <div className="mt-12 pt-6 border-t border-gray-200 flex justify-between items-center">
           <Link
             to="/blog"
             className="inline-flex items-center gap-2 text-gray-500 hover:text-accent transition-colors group"
           >
-            <span className="group-hover:-translate-x-1 transition-transform">←</span>
-            Todos os artigos
+            <i className="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
+            <span>Todos os artigos</span>
           </Link>
           
           <div className="flex items-center gap-2">
@@ -464,40 +467,40 @@ export default function Post() {
                 onClick={handleShare}
                 className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:border-accent hover:text-accent transition-all shadow-sm"
               >
-                <span>📤</span>
+                <i className="fas fa-share-alt"></i>
                 <span className="hidden sm:inline">Compartilhar</span>
               </button>
               
-              {/* Menu de compartilhamento */}
+              {/* Menu de compartilhamento - COM ÍCONES OFICIAIS */}
               {showShareMenu && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
                   <button
                     onClick={copyToClipboard}
                     className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 hover:text-accent flex items-center gap-3 transition-colors"
                   >
-                    <span>🔗</span>
-                    Copiar link
+                    <i className="fas fa-link text-accent w-5"></i>
+                    <span>Copiar link</span>
                   </button>
                   <button
                     onClick={shareOnWhatsApp}
                     className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 hover:text-accent flex items-center gap-3 transition-colors"
                   >
-                    <span>📱</span>
-                    WhatsApp
+                    <i className="fab fa-whatsapp text-accent w-5"></i>
+                    <span>WhatsApp</span>
                   </button>
                   <button
                     onClick={shareOnLinkedIn}
                     className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 hover:text-accent flex items-center gap-3 transition-colors"
                   >
-                    <span>💼</span>
-                    LinkedIn
+                    <i className="fab fa-linkedin-in text-accent w-5"></i>
+                    <span>LinkedIn</span>
                   </button>
                   <button
                     onClick={shareOnTwitter}
                     className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 hover:text-accent flex items-center gap-3 transition-colors"
                   >
-                    <span>🐦</span>
-                    Twitter
+                    <i className="fab fa-twitter text-accent w-5"></i>
+                    <span>Twitter</span>
                   </button>
                 </div>
               )}
@@ -508,7 +511,7 @@ export default function Post() {
               onClick={handlePrint}
               className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:border-accent hover:text-accent transition-all shadow-sm"
             >
-              <span>🖨️</span>
+              <i className="fas fa-print"></i>
               <span className="hidden sm:inline">Imprimir</span>
             </button>
           </div>
@@ -518,14 +521,14 @@ export default function Post() {
         <div className="mt-12 p-6 bg-white rounded-lg border border-gray-200 shadow-sm">
           <div className="flex items-start gap-4">
             <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-              <span className="text-2xl text-accent">⚖️</span>
+              <i className="fas fa-user-tie text-2xl text-accent"></i>
             </div>
             <div>
               <h4 className="font-bold text-primary mb-1">{content.siteName}</h4>
               <p className="text-sm text-gray-500 mb-2">{content.oab}</p>
               <p className="text-gray-600 text-sm">
-                Advogado especialista em Direito do Consumidor e Direito Bancário. 
-                Membro da Comissão de Direito Bancário da OAB/SP.
+                Advogado especialista em Direito Civil, Trabalhista e Criminal. 
+                Membro da OAB/SP desde 2012, com atuação dedicada e atenção personalizada a cada cliente.
               </p>
             </div>
           </div>

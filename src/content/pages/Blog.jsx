@@ -11,9 +11,12 @@ export default function Blog() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [content, setContent] = useState({
-    siteName: "Dr. Carlos Silva",
-    oab: "OAB/SP 123.456",
-    whatsapp: "5511999999999"
+    siteName: "Edson Silva Maltez",
+    oab: "OAB/SP 344.956",
+    whatsapp: "5519996319810",
+    phone: "(19) 99631-9810",
+    email: "dredsonmaltez@gmail.com",
+    address: "Rua Francisco Biancalana, 31 - sala 02 - Vila Santana, Sumaré - SP"
   });
 
   useEffect(() => {
@@ -22,14 +25,6 @@ export default function Blog() {
         const settingsData = await loadContent('/src/content/settings/general.md');
         setContent(prev => ({ ...prev, ...settingsData?.data }));
 
-        // 🔥 MÁGICA: Lista TODOS os arquivos .md da pasta public/content/posts/
-        // Como não podemos listar arquivos diretamente no frontend,
-        // vamos usar uma abordagem híbrida: o cliente cria, e o blog tenta carregar
-        // por slug conhecido ou via API do GitHub (mas vamos evitar)
-
-        // SOLUÇÃO: Pré-definir slugs? Não, porque o cliente cria novos.
-
-        // Vamos usar a API do GitHub SOMENTE para listar os arquivos (público, sem token)
         const repo = 'oseiasoliveirasilva828-afk/Site-Advocacia';
         const branch = 'main';
         const path = 'public/content/posts';
@@ -150,7 +145,14 @@ export default function Blog() {
       </section>
 
       <WhatsAppButton whatsapp={content.whatsapp} />
-      <Footer siteName={content.siteName} oab={content.oab} phone={content.phone} email={content.email} address={content.address} whatsapp={content.whatsapp} />
+      <Footer 
+        siteName={content.siteName} 
+        oab={content.oab} 
+        phone={content.phone} 
+        email={content.email} 
+        address={content.address} 
+        whatsapp={content.whatsapp} 
+      />
     </div>
   );
 }
