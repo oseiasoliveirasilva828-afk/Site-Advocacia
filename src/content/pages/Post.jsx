@@ -8,6 +8,65 @@ import WhatsAppButton from '../components/WhatsAppButton';
 import { loadContent } from '/src/utils/contentLoader';
 import '../styles/animations.css';
 
+// Função para extrair ID do YouTube
+function extractYouTubeId(url) {
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+}
+
+// Renderizador personalizado para o marked
+const renderer = new marked.Renderer();
+
+// Renderizar links do YouTube como iframes
+renderer.link = (href, title, text) => {
+  const youtubeId = extractYouTubeId(href);
+  if (youtubeId) {
+    return `
+      <div style="position: relative; padding-bottom: 56.25%; height: 0; margin: 20px 0; overflow: hidden; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <iframe 
+          src="https://www.youtube.com/embed/${youtubeId}" 
+          style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+          allowfullscreen
+          title="YouTube video"
+        ></iframe>
+      </div>
+    `;
+  }
+  // Verificar se é um link de vídeo MP4
+  if (href.match(/\.(mp4|webm|ogg)(\?.*)?$/i)) {
+    return `
+      <video controls style="width: 100%; max-height: 500px; border-radius: 12px; margin: 20px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <source src="${href}" type="video/mp4">
+        Seu navegador não suporta vídeos.
+      </video>
+    `;
+  }
+  // Link normal
+  return `<a href="${href}" title="${title || ''}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+};
+
+// Renderizar imagens com lazy loading e classes
+renderer.image = (href, title, text) => {
+  return `
+    <img 
+      src="${href}" 
+      alt="${text || ''}" 
+      title="${title || ''}" 
+      loading="lazy"
+      style="max-width: 100%; height: auto; border-radius: 8px; margin: 20px auto; display: block; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"
+    />
+  `;
+};
+
+marked.setOptions({
+  breaks: true,
+  gfm: true,
+  headerIds: true,
+  mangle: false,
+  renderer: renderer
+});
+
 function parseFrontmatter(text) {
   const match = text.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
   if (!match) return { data: {}, content: text };
@@ -68,19 +127,69 @@ export default function Post() {
 
   function renderMarkdown(content) {
     if (!content) return '';
-    marked.setOptions({
-      breaks: true,
-      gfm: true,
-      headerIds: true,
-      mangle: false
-    });
     return marked.parse(content);
   }
 
   const handlePrint = () => {
     const printWindow = window.open('', '_blank');
-    const articleContent = articleRef.current?.innerHTML || '';
     
+    // Clona o artigo para não modificar o original
+    const articleClone = articleRef.current.cloneNode(true);
+    
+    // Converte caminhos relativos de imagens para absolutos
+    const images = articleClone.querySelectorAll('img');
+    images.forEach(img => {
+      if (img.src.startsWith('/')) {
+        img.src = window.location.origin + img.src;
+      }
+    });
+
+    // Converte vídeos para funcionarem na impressão
+    const videos = articleClone.querySelectorAll('video');
+    videos.forEach(video => {
+      video.setAttribute('controls', 'true');
+      video.setAttribute('preload', 'auto');
+      video.style.width = '100%';
+      video.style.maxHeight = '500px';
+      video.style.borderRadius = '12px';
+      video.style.margin = '20px 0';
+      video.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+    });
+
+    // Converte links do YouTube para embeds funcionais
+    const links = articleClone.querySelectorAll('a');
+    links.forEach(link => {
+      const youtubeId = extractYouTubeId(link.href);
+      if (youtubeId) {
+        const embed = document.createElement('div');
+        embed.innerHTML = `
+          <div style="position: relative; padding-bottom: 56.25%; height: 0; margin: 20px 0; overflow: hidden; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            <iframe 
+              src="https://www.youtube.com/embed/${youtubeId}" 
+              style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+              allowfullscreen
+            ></iframe>
+          </div>
+        `;
+        link.parentNode.replaceChild(embed.firstChild, link);
+      } else if (link.href.match(/\.(mp4|webm|ogg)(\?.*)?$/i)) {
+        const video = document.createElement('video');
+        video.setAttribute('controls', 'true');
+        video.style.width = '100%';
+        video.style.maxHeight = '500px';
+        video.style.borderRadius = '12px';
+        video.style.margin = '20px 0';
+        video.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+        const source = document.createElement('source');
+        source.src = link.href;
+        source.type = 'video/mp4';
+        video.appendChild(source);
+        link.parentNode.replaceChild(video, link);
+      }
+    });
+
+    const articleHTML = articleClone.outerHTML;
+
     printWindow.document.write(`
       <!DOCTYPE html>
       <html>
@@ -169,6 +278,28 @@ export default function Post() {
               white-space: normal;
             }
             
+            img {
+              max-width: 100%;
+              height: auto;
+              display: block;
+              margin: 20px auto;
+              border-radius: 8px;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+            
+            video {
+              width: 100%;
+              max-height: 500px;
+              border-radius: 12px;
+              margin: 20px 0;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+            
+            iframe {
+              border-radius: 12px;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+            
             blockquote {
               border-left: 4px solid #D4AF37;
               background-color: #F8F4F0;
@@ -205,6 +336,10 @@ export default function Post() {
                 box-shadow: none;
                 padding: 40px;
               }
+              img, video, iframe {
+                box-shadow: none;
+                border: 1px solid #eee;
+              }
             }
           </style>
         </head>
@@ -216,7 +351,7 @@ export default function Post() {
               ${post?.data?.author || `Dr. ${content.siteName}`} | 
               ${content.oab}
             </div>
-            ${articleContent}
+            ${articleHTML}
             <div class="footer-note">
               Publicado por ${content.siteName} • ${content.oab}<br>
               Fonte: ${window.location.href}
@@ -228,7 +363,11 @@ export default function Post() {
     
     printWindow.document.close();
     printWindow.focus();
-    printWindow.print();
+    
+    // Aguarda imagens e vídeos carregarem antes de imprimir
+    setTimeout(() => {
+      printWindow.print();
+    }, 500);
   };
 
   const handleShare = async () => {
@@ -345,8 +484,8 @@ export default function Post() {
     <div className="min-h-screen bg-gray-50">
       <Header siteName={content.siteName} oab={content.oab} whatsapp={content.whatsapp} />
 
-      {/* Faixa Azul - COM GRADIENTE DESDE O TOPO */}
-      <section className="bg-gradient-to-r from-primary to-secondary text-white pt-37 pb-21 md:pb-20 lg:pb-24">
+      {/* Faixa Azul */}
+      <section className="bg-gradient-to-r from-primary to-secondary text-white pt-32 pb-16 md:pb-20 lg:pb-24">
         <div className="container-custom text-center">
           <span className="text-accent font-semibold tracking-wider uppercase text-sm mb-3 inline-block">
             DOUTRINA & JURISPRUDÊNCIA
@@ -415,7 +554,7 @@ export default function Post() {
           </div>
         )}
 
-        {/* Artigo */}
+        {/* Artigo com suporte a vídeos */}
         <article 
           ref={articleRef}
           className="prose prose-sm sm:prose-base lg:prose-lg max-w-none

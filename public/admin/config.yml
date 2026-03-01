@@ -16,14 +16,16 @@ collections:
       - {label: "Data", name: "date", widget: "datetime"}
       - {label: "Categoria", name: "category", widget: "string", required: false}
       - {label: "Descrição", name: "description", widget: "text", required: false, hint: "Resumo que aparece na lista de artigos"}
-      - {label: "Imagem de destaque", name: "image", widget: "image", required: false, hint: "Imagem que aparece no card do artigo"}
+      - {label: "Imagem de destaque", name: "image", widget: "image", required: false, 
+         hint: "Imagem que aparece no card do artigo",
+         media_library: { config: { multiple: false, max_file_size: 5242880 }}}
       - {label: "Autor", name: "author", widget: "string", default: "Edson Silva Maltez"}
 
-      # CAMPO PRINCIPAL DO ARTIGO — COM BARRA DE FERRAMENTAS
+      # CAMPO PRINCIPAL DO ARTIGO — COM BARRA DE FERRAMENTAS E VÍDEO
       - label: "Conteúdo"
         name: "body"
         widget: "markdown"
-        modes: ["rich_text"]                # ← Ativa o editor visual
+        modes: ["rich_text"]
         buttons: ["bold", "italic", "link", "heading-one", "heading-two", "heading-three", "quote", "code", "bulleted-list", "numbered-list"] 
         editor_components: ["image", "code-block"]
-        hint: "Use a barra de ferramentas para formatar o texto. Quebras de linha viram parágrafos automaticamente."
+        hint: "Use a barra de ferramentas para formatar o texto. Para vídeos: YouTube (cole o link) ou MP4 (use a sintaxe ![video](url.mp4))"
