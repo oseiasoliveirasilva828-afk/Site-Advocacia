@@ -16,13 +16,13 @@ function extractYouTubeId(url) {
   return (match && match[2].length === 11) ? match[2] : null;
 }
 
-// Função para processar o campo de vídeo (agora recebe objeto diretamente)
+// Função para processar o campo de vídeo
 function processFeaturedVideo(videoData) {
   console.log('processFeaturedVideo recebeu:', videoData);
   
   if (!videoData) return null;
   
-  // Se já for um objeto (vindo do YAML), usa direto
+  // Se já for um objeto, usa direto
   if (typeof videoData === 'object') {
     console.log('É objeto, processando...');
     
@@ -65,21 +65,6 @@ function processFeaturedVideo(videoData) {
     }
   }
   
-  // Se for string (improvável agora, mas mantido por segurança)
-  if (typeof videoData === 'string') {
-    console.log('É string, tentando parsear YAML...');
-    // Tenta converter string para objeto (caso raro)
-    const lines = videoData.split('\n');
-    const obj = {};
-    lines.forEach(line => {
-      const [key, ...val] = line.split(':');
-      if (key && val.length) {
-        obj[key.trim()] = val.join(':').trim();
-      }
-    });
-    return processFeaturedVideo(obj);
-  }
-  
   return null;
 }
 
@@ -90,36 +75,42 @@ function parseFrontmatter(text) {
   const data = {};
   const lines = match[1].split('\n');
   
-  let currentKey = null;
-  let currentIndent = 0;
-  let currentObj = null;
-  
-  lines.forEach((line) => {
-    if (line.trim() === '') return;
-    
-    // Verifica indentação para objetos aninhados
-    const indent = line.search(/\S/);
-    const trimmedLine = line.trim();
-    
-    if (!trimmedLine.includes(':')) return;
-    
-    const [key, ...valueParts] = trimmedLine.split(':');
-    const value = valueParts.join(':').trim();
-    
-    if (value === '') {
-      // É um objeto aninhado
-      currentKey = key;
-      currentIndent = indent;
-      data[currentKey] = {};
-      currentObj = data[currentKey];
-    } else if (indent > currentIndent && currentObj) {
-      // É propriedade do objeto aninhado
-      currentObj[key] = value;
-    } else {
-      // É propriedade normal
-      data[key] = value;
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i].trim();
+    if (line === '' || !line.includes(':')) {
+      i++;
+      continue;
     }
-  });
+    
+    const colonIndex = line.indexOf(':');
+    const key = line.substring(0, colonIndex).trim();
+    let value = line.substring(colonIndex + 1).trim();
+    
+    // Verifica se é um objeto aninhado (começa com espaço na próxima linha)
+    if (i + 1 < lines.length && lines[i + 1].startsWith('  ')) {
+      const obj = {};
+      i++;
+      
+      // Processa linhas indentadas
+      while (i < lines.length && lines[i].startsWith('  ')) {
+        const nestedLine = lines[i].trim();
+        if (nestedLine.includes(':')) {
+          const nestedColon = nestedLine.indexOf(':');
+          const nestedKey = nestedLine.substring(0, nestedColon).trim();
+          const nestedValue = nestedLine.substring(nestedColon + 1).trim();
+          obj[nestedKey] = nestedValue;
+        }
+        i++;
+      }
+      
+      data[key] = obj;
+    } else {
+      // Valor simples
+      data[key] = value;
+      i++;
+    }
+  }
 
   return { data, content: match[2] };
 }
@@ -399,11 +390,11 @@ export default function Post() {
           <i className="fas fa-arrow-left"></i> Todos os artigos
         </Link>
 
-        {/* VÍDEO DE DESTAQUE - AGORA FUNCIONA! */}
+        {/* 🎥 VÍDEO DE DESTAQUE - SEMPRE APARECE SE TIVER */}
         {post.data.featured_video && processFeaturedVideo(post.data.featured_video)}
 
-        {/* Imagem de destaque (se não tiver vídeo) */}
-        {!post.data.featured_video && post.data.image && (
+        {/* 🖼️ IMAGEM DE DESTAQUE - AGORA APARECE MESMO COM VÍDEO */}
+        {post.data.image && (
           <div className="mb-8">
             <img
               src={post.data.image}
