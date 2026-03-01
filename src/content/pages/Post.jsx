@@ -18,19 +18,55 @@ function extractYouTubeId(url) {
 
 // Função para processar o campo de vídeo de destaque
 function processFeaturedVideo(videoData) {
-  if (!videoData) return null;
+  console.log('processFeaturedVideo recebeu:', videoData);
+  console.log('Tipo:', typeof videoData);
+  
+  if (!videoData) {
+    console.log('videoData é null/undefined');
+    return null;
+  }
   
   try {
-    // Se for string, tenta parsear JSON
     let data = videoData;
+    
+    // Se for string, tenta várias formas de parsear
     if (typeof videoData === 'string') {
-      // Remove aspas extras se houver
-      const cleanStr = videoData.replace(/^"|"$/g, '');
-      data = JSON.parse(cleanStr);
+      console.log('É string, tentando parsear...');
+      
+      // Tenta parsear diretamente
+      try {
+        data = JSON.parse(videoData);
+        console.log('Parsed JSON:', data);
+      } catch (e) {
+        console.log('Erro ao parsear JSON direto:', e);
+        
+        // Tenta remover aspas extras
+        const cleanStr = videoData.replace(/^"|"$/g, '').replace(/\\"/g, '"');
+        try {
+          data = JSON.parse(cleanStr);
+          console.log('Parsed JSON após limpeza:', data);
+        } catch (e2) {
+          console.log('Erro ainda após limpeza:', e2);
+          
+          // Se for uma URL direta
+          if (videoData.match(/^https?:\/\//)) {
+            console.log('É uma URL direta');
+            data = { type: 'youtube', url: videoData };
+          } else {
+            return null;
+          }
+        }
+      }
     }
     
+    // Agora processa o objeto
+    console.log('Dados processados:', data);
+    
     if (data.type === 'youtube' && data.url) {
+      console.log('Processando YouTube:', data.url);
       const videoId = extractYouTubeId(data.url);
+      console.log('YouTube ID:', videoId);
+      
       if (videoId) {
         return (
           <div className="mb-8">
@@ -50,6 +86,7 @@ function processFeaturedVideo(videoData) {
         );
       }
     } else if (data.type === 'upload' && data.file) {
+      console.log('Processando upload:', data.file);
       return (
         <div className="mb-8">
           <video
@@ -65,28 +102,11 @@ function processFeaturedVideo(videoData) {
           )}
         </div>
       );
+    } else {
+      console.log('Tipo não reconhecido ou dados incompletos');
     }
   } catch (e) {
-    console.error('Erro ao processar vídeo:', e);
-    // Se não conseguir parsear, tenta como string direta (caso seja URL)
-    if (typeof videoData === 'string' && videoData.match(/^https?:\/\//)) {
-      const videoId = extractYouTubeId(videoData);
-      if (videoId) {
-        return (
-          <div className="mb-8">
-            <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
-              <iframe
-                src={`https://www.youtube.com/embed/${videoId}`}
-                className="absolute top-0 left-0 w-full h-full rounded-lg shadow-lg"
-                style={{ border: 0 }}
-                allowFullScreen
-                title="Vídeo do artigo"
-              />
-            </div>
-          </div>
-        );
-      }
-    }
+    console.error('Erro geral no processFeaturedVideo:', e);
   }
   
   return null;
@@ -195,7 +215,9 @@ export default function Post() {
 
         if (response.ok) {
           const text = await response.text();
+          console.log('Raw frontmatter:', text); // VER O QUE ESTÁ VINDO
           const { data, content } = parseFrontmatter(text);
+          console.log('Dados parseados:', data); // VER O QUE FOI PARSEADO
           setPost({ slug, data, content });
         } else {
           setPost(null);
@@ -216,10 +238,8 @@ export default function Post() {
   const handlePrint = () => {
     const printWindow = window.open('', '_blank');
     
-    // Clona o artigo para não modificar o original
     const articleClone = articleRef.current.cloneNode(true);
     
-    // Converte caminhos relativos de imagens para absolutos
     const images = articleClone.querySelectorAll('img');
     images.forEach(img => {
       if (img.src && !img.src.startsWith('http')) {
@@ -243,10 +263,10 @@ export default function Post() {
             body { font-family: 'Merriweather', Georgia, serif; background-color: #F9F7F4; color: #2C3E50; line-height: 1.8; padding: 40px 20px; }
             .print-container { max-width: 800px; margin: 0 auto; background-color: white; padding: 60px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
             h1 { font-size: 2.5rem; font-weight: 700; color: #1A2C3E; margin-bottom: 1rem; font-family: 'Merriweather', serif; }
-            .metadata { color: #666; font-size: 0.9rem; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid #D4AF37; font-family: 'Inter', sans-serif; }
+            .metadata { color: #666; font-size: 0.9rem; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid #D4AF37; }
             img { max-width: 100%; height: auto; display: block; margin: 20px auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-            video { width: 100%; max-height: 500px; border-radius: 12px; margin: 20px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-            iframe { border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+            video { width: 100%; max-height: 500px; border-radius: 12px; margin: 20px 0; }
+            iframe { border-radius: 12px; }
             @media print { body { background-color: white; padding: 0; } .print-container { box-shadow: none; padding: 40px; } }
           </style>
         </head>
@@ -269,11 +289,7 @@ export default function Post() {
     
     printWindow.document.close();
     printWindow.focus();
-    
-    // Aguarda carregamento antes de imprimir
-    setTimeout(() => {
-      printWindow.print();
-    }, 500);
+    setTimeout(() => printWindow.print(), 500);
   };
 
   const handleShare = async () => {
@@ -426,7 +442,7 @@ export default function Post() {
           <div dangerouslySetInnerHTML={{ __html: marked.parse(post.content) }} />
         </article>
 
-        {/* Ações - COM BOTÃO IMPRIMIR */}
+        {/* Ações */}
         <div className="mt-8 pt-6 border-t border-gray-200 flex justify-between items-center">
           <Link to="/blog" className="text-gray-500 hover:text-accent">
             <i className="fas fa-arrow-left"></i> Todos os artigos
@@ -500,7 +516,7 @@ export default function Post() {
               <p className="text-xs text-gray-500 mb-1">{content.oab}</p>
               <p className="text-gray-600 text-xs">
                 Advogado especialista em Direito Civil, Trabalhista e Criminal. 
-                Membro da OAB/SP desde 2012, com atuação dedicada e atenção personalizada a cada cliente.
+                Membro da OAB/SP desde 2014, com atuação dedicada e atenção personalizada a cada cliente.
               </p>
             </div>
           </div>
