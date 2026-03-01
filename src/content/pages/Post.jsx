@@ -16,12 +16,12 @@ function extractYouTubeId(url) {
   return (match && match[2].length === 11) ? match[2] : null;
 }
 
-// Processar vídeos no frontmatter
-function processFeaturedVideo(videoData) {
+// Renderizar vídeo de destaque
+function renderFeaturedVideo(videoData) {
   if (!videoData) return null;
   
   try {
-    // Se for string, tenta parsear
+    // Se for string, tenta parsear JSON
     const data = typeof videoData === 'string' ? JSON.parse(videoData) : videoData;
     
     if (data.type === 'youtube' && data.url) {
@@ -68,51 +68,34 @@ function processFeaturedVideo(videoData) {
   return null;
 }
 
-// Renderizador personalizado para o marked
 const renderer = new marked.Renderer();
 
 renderer.link = (href, title, text) => {
   const youtubeId = extractYouTubeId(href);
   if (youtubeId) {
     return `
-      <div style="position: relative; padding-bottom: 56.25%; height: 0; margin: 20px 0; overflow: hidden; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-        <iframe 
-          src="https://www.youtube.com/embed/${youtubeId}" 
-          style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
-          allowfullscreen
-          title="YouTube video"
-        ></iframe>
+      <div style="position: relative; padding-bottom: 56.25%; height: 0; margin: 20px 0;">
+        <iframe src="https://www.youtube.com/embed/${youtubeId}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" allowfullscreen></iframe>
       </div>
     `;
   }
   if (href.match(/\.(mp4|webm|ogg)(\?.*)?$/i)) {
     return `
-      <video controls style="width: 100%; max-height: 500px; border-radius: 12px; margin: 20px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+      <video controls style="width: 100%; max-height: 500px; margin: 20px 0;">
         <source src="${href}" type="video/mp4">
-        Seu navegador não suporta vídeos.
       </video>
     `;
   }
-  return `<a href="${href}" title="${title || ''}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+  return `<a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a>`;
 };
 
 renderer.image = (href, title, text) => {
-  return `
-    <img 
-      src="${href}" 
-      alt="${text || ''}" 
-      title="${title || ''}" 
-      loading="lazy"
-      style="max-width: 100%; height: auto; border-radius: 8px; margin: 20px auto; display: block; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"
-    />
-  `;
+  return `<img src="${href}" alt="${text || ''}" loading="lazy" style="max-width: 100%; height: auto; margin: 20px 0;" />`;
 };
 
 marked.setOptions({
   breaks: true,
   gfm: true,
-  headerIds: true,
-  mangle: false,
   renderer: renderer
 });
 
@@ -125,13 +108,10 @@ function parseFrontmatter(text) {
     if (line.includes(': ')) {
       const [key, ...value] = line.split(': ');
       let val = value.join(': ').trim();
-      // Tentar parsear JSON se parecer ser um objeto
       if (val.startsWith('{') && val.endsWith('}')) {
         try {
           val = JSON.parse(val);
-        } catch (e) {
-          // ignora
-        }
+        } catch (e) {}
       }
       data[key.trim()] = val;
     }
@@ -159,7 +139,7 @@ export default function Post() {
     async function loadData() {
       try {
         const settingsData = await loadContent('/src/content/settings/general.md');
-        setContent((prev) => ({ ...prev, ...settingsData?.data }));
+        setContent(prev => ({ ...prev, ...settingsData?.data }));
 
         const response = await fetch(`/content/posts/${slug}.md`);
 
@@ -174,117 +154,19 @@ export default function Post() {
         console.error('Erro ao carregar post:', error);
         setPost(null);
       } finally {
-        setTimeout(() => {
-          setLoading(false);
-        }, 800);
+        setTimeout(() => setLoading(false), 800);
       }
     }
 
     loadData();
   }, [slug]);
 
-  function renderMarkdown(content) {
-    if (!content) return '';
-    return marked.parse(content);
-  }
-
-  const handlePrint = () => {
-    const printWindow = window.open('', '_blank');
-    
-    const articleClone = articleRef.current.cloneNode(true);
-    
-    const images = articleClone.querySelectorAll('img');
-    images.forEach(img => {
-      if (img.src && !img.src.startsWith('http')) {
-        img.src = window.location.origin + (img.src.startsWith('/') ? img.src : '/' + img.src);
-      }
-    });
-
-    const articleHTML = articleClone.outerHTML;
-
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>${post?.data?.title || 'Artigo'} - ${content.siteName}</title>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <style>
-            @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
-            
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { font-family: 'Merriweather', Georgia, serif; background-color: #F9F7F4; color: #2C3E50; line-height: 1.8; padding: 40px 20px; }
-            .print-container { max-width: 800px; margin: 0 auto; background-color: white; padding: 60px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-            h1 { font-size: 2.5rem; font-weight: 700; color: #1A2C3E; margin-bottom: 1rem; font-family: 'Merriweather', serif; }
-            .metadata { color: #666; font-size: 0.9rem; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid #D4AF37; }
-            img { max-width: 100%; height: auto; display: block; margin: 20px auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-            video { width: 100%; max-height: 500px; border-radius: 12px; margin: 20px 0; }
-            iframe { border-radius: 12px; }
-            @media print { body { background-color: white; padding: 0; } .print-container { box-shadow: none; padding: 40px; } }
-          </style>
-        </head>
-        <body>
-          <div class="print-container">
-            <h1>${post?.data?.title || ''}</h1>
-            <div class="metadata">
-              ${post?.data?.date ? new Date(post.data.date).toLocaleDateString('pt-BR') : ''} | 
-              ${post?.data?.author || `Dr. ${content.siteName}`} | 
-              ${content.oab}
-            </div>
-            ${articleHTML}
-            <div class="footer-note">Publicado por ${content.siteName} • ${content.oab}</div>
-          </div>
-        </body>
-      </html>
-    `);
-    
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => printWindow.print(), 500);
-  };
-
-  const handleShare = async () => {
-    const shareData = {
-      title: post?.data?.title || 'Artigo Jurídico',
-      text: post?.data?.description || 'Confira este artigo jurídico',
-      url: window.location.href
-    };
-
-    try {
-      if (navigator.share && window.innerWidth <= 768) {
-        await navigator.share(shareData);
-      } else {
-        setShowShareMenu(!showShareMenu);
-      }
-    } catch (error) {
-      console.log('Erro ao compartilhar:', error);
-    }
-  };
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(window.location.href);
-    alert('Link copiado!');
-    setShowShareMenu(false);
-  };
-
-  const shareOnWhatsApp = () => {
-    const text = encodeURIComponent(`Confira este artigo: ${post?.data?.title} - ${window.location.href}`);
-    window.open(`https://wa.me/?text=${text}`, '_blank');
-    setShowShareMenu(false);
-  };
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-primary flex items-center justify-center px-4">
+      <div className="min-h-screen bg-primary flex items-center justify-center">
         <div className="text-center">
-          <div className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 mx-auto mb-4">
-            <div className="absolute inset-0 border-2 border-accent/20 rounded-full"></div>
-            <div className="absolute inset-0 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-3xl sm:text-4xl text-accent">⚖️</span>
-            </div>
-          </div>
-          <p className="text-white/80 text-sm sm:text-base">Carregando artigo...</p>
+          <div className="w-16 h-16 border-4 border-accent border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white">Carregando artigo...</p>
         </div>
       </div>
     );
@@ -293,18 +175,11 @@ export default function Post() {
   if (!post) {
     return (
       <div className="min-h-screen bg-primary">
-        <Header siteName={content.siteName} oab={content.oab} whatsapp={content.whatsapp} />
-        <div className="h-24 sm:h-28 md:h-32"></div>
-        <div className="flex items-center justify-center px-4 py-16">
-          <div className="max-w-2xl text-center text-white px-4">
-            <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 mx-auto mb-6 bg-primary/80 rounded-full flex items-center justify-center border-2 border-accent/30">
-              <span className="text-4xl sm:text-5xl md:text-6xl text-accent">📜</span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-accent mb-4">Artigo não encontrado</h1>
-            <Link to="/blog" className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-primary font-bold rounded-full">
-              ← Voltar para o blog
-            </Link>
-          </div>
+        <Header {...content} />
+        <div className="h-24"></div>
+        <div className="text-center text-white py-20">
+          <h1 className="text-4xl font-bold text-accent mb-4">Artigo não encontrado</h1>
+          <Link to="/blog" className="bg-accent text-primary px-6 py-3 rounded-full">← Voltar</Link>
         </div>
         <Footer {...content} />
       </div>
@@ -315,19 +190,11 @@ export default function Post() {
     <div className="min-h-screen bg-gray-50">
       <Header {...content} />
 
-      {/* Faixa Azul */}
       <section className="bg-gradient-to-r from-primary to-secondary text-white pt-32 pb-16">
         <div className="container-custom text-center">
-          <span className="text-accent font-semibold tracking-wider uppercase text-sm mb-3 inline-block">
-            DOUTRINA & JURISPRUDÊNCIA
-          </span>
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-            {post.data.title}
-          </h1>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">{post.data.title}</h1>
           {post.data.description && (
-            <p className="text-lg md:text-xl text-white/80 max-w-3xl mx-auto">
-              {post.data.description}
-            </p>
+            <p className="text-lg text-white/80 max-w-2xl mx-auto">{post.data.description}</p>
           )}
         </div>
       </section>
@@ -338,64 +205,19 @@ export default function Post() {
           <i className="fas fa-arrow-left"></i> Todos os artigos
         </Link>
 
-        {/* Metadados */}
-        <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-gray-500 mb-6 pb-4 border-b border-gray-200">
-          {post.data.date && (
-            <time className="flex items-center gap-1">
-              <i className="far fa-calendar-alt text-accent"></i>
-              {new Date(post.data.date).toLocaleDateString('pt-BR')}
-            </time>
-          )}
-          <span className="flex items-center gap-1">
-            <i className="fas fa-gavel text-accent"></i>
-            {post.data.author || `Dr. ${content.siteName}`}
-          </span>
-          <span className="flex items-center gap-1">
-            <i className="fas fa-scroll text-accent"></i>
-            {content.oab}
-          </span>
-        </div>
+        {/* 🔥 VÍDEO DE DESTAQUE */}
+        {post.data.featured_video && renderFeaturedVideo(post.data.featured_video)}
 
-        {/* 🔥 VÍDEO DE DESTAQUE (se existir) */}
-        {post.data.featured_video && processFeaturedVideo(post.data.featured_video)}
-
-        {/* Imagem de destaque (se existir e não tiver vídeo) */}
+        {/* Imagem de destaque (se não tiver vídeo) */}
         {!post.data.featured_video && post.data.image && (
-          <div className="mb-8">
-            <img src={post.data.image} alt={post.data.title} className="w-full rounded-lg shadow-lg" />
-          </div>
+          <img src={post.data.image} alt={post.data.title} className="w-full rounded-lg shadow-lg mb-6" />
         )}
 
-        {/* Artigo */}
         <article 
           ref={articleRef}
-          className="prose prose-sm sm:prose-base lg:prose-lg max-w-none"
-        >
-          <div dangerouslySetInnerHTML={{ __html: renderMarkdown(post.content) }} />
-        </article>
-
-        {/* Ações */}
-        <div className="mt-8 pt-6 border-t border-gray-200 flex justify-between items-center">
-          <Link to="/blog" className="text-gray-500 hover:text-accent">
-            <i className="fas fa-arrow-left"></i> Todos os artigos
-          </Link>
-          
-          <div className="relative">
-            <button onClick={handleShare} className="px-3 py-1.5 bg-white border border-gray-200 rounded-lg hover:border-accent text-sm">
-              <i className="fas fa-share-alt"></i> Compartilhar
-            </button>
-            {showShareMenu && (
-              <div className="absolute right-0 mt-2 w-36 bg-white rounded-lg shadow-xl border py-1 z-50">
-                <button onClick={copyToClipboard} className="w-full px-3 py-1.5 text-left hover:bg-gray-50 text-xs">
-                  <i className="fas fa-link text-accent mr-2"></i>Copiar link
-                </button>
-                <button onClick={shareOnWhatsApp} className="w-full px-3 py-1.5 text-left hover:bg-gray-50 text-xs">
-                  <i className="fab fa-whatsapp text-accent mr-2"></i>WhatsApp
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
+          className="prose prose-lg max-w-none"
+          dangerouslySetInnerHTML={{ __html: marked.parse(post.content) }}
+        />
       </main>
 
       <WhatsAppButton whatsapp={content.whatsapp} />
