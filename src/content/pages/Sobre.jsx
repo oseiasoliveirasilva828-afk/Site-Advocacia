@@ -27,7 +27,7 @@ export default function Sobre() {
     lawyerExperience: 12,
     lawyerCases: 350,
     
-    lawyerBio: "Natural de Diadema, Edson Silva Maltez construiu uma trajetória sólida na advocacia, marcada pela dedicação e pelo compromisso com a justiça. Formado pela Pontifícia Universidade Católica de Campinas (PUC-Campinas), atua há 12 anos nas áreas de Direito Civil, Trabalhista, Imobliliário e Criminal, oferecendo consultoria, assessoria e defesa técnica com ética e atenção personalizada.",
+    lawyerBio: "Natural de Diadema, Edson Silva Maltez construiu uma trajetória sólida na advocacia, marcada pela dedicação e pelo compromisso com a justiça. Formado pela Pontifícia Universidade Católica de Campinas (PUC-Campinas), atua há 12 anos nas áreas de Direito Civil, Trabalhista, Imobiliário e Criminal, oferecendo consultoria, assessoria e defesa técnica com ética e atenção personalizada.",
     
     quote: "A justiça não é apenas uma profissão, é um compromisso com a verdade e com o próximo.",
     
@@ -60,8 +60,8 @@ export default function Sobre() {
     <div className="min-h-screen bg-white">
       <Header siteName={content.siteName} oab={content.oab} whatsapp={content.whatsapp} />
       
-      {/* Hero da página Sobre - Otimizado para notebooks */}
-      <section className="pt-32 lg:pt-36 xl:pt-40 pb-16 lg:pb-20 xl:pb-24 bg-gradient-to-r from-primary to-secondary text-white">
+      {/* Hero da página Sobre - AUMENTADA A DISTÂNCIA DO HEADER */}
+      <section className="pt-40 lg:pt-44 xl:pt-48 pb-16 lg:pb-20 xl:pb-24 bg-gradient-to-r from-primary to-secondary text-white">
         <div className="container-custom px-4 md:px-6 lg:px-8 text-center">
           <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-3 lg:mb-4 animate-fadeInUp">Sobre Nós</h1>
           <p className="text-sm md:text-base lg:text-lg xl:text-xl text-white/80 max-w-2xl lg:max-w-3xl mx-auto animate-fadeInUp delay-200">
@@ -78,7 +78,7 @@ export default function Sobre() {
             <p className="text-lg md:text-xl lg:text-2xl xl:text-3xl font-light text-primary italic leading-relaxed">
               "{content.quote}"
             </p>
-            <p className="text-xs md:text-sm lg:text-base text-gray-500 mt-3 lg:mt-4 md:mt-6">— {content.lawyerName}</p>
+            <p className="text-xs md:text-sm lg:text-base text-gray-500 mt-3 lg:mt-4">— {content.lawyerName}</p>
           </div>
         </div>
       </section>
@@ -100,13 +100,13 @@ export default function Sobre() {
               </div>
               
               {/* Badge flutuante 1 - Experiência */}
-              <div className="absolute -bottom-2 lg:-bottom-3 xl:-bottom-4 -right-2 lg:-right-3 xl:-right-4 bg-white p-2 lg:p-3 xl:p-4 rounded-lg lg:rounded-xl shadow-lg lg:shadow-xl xl:shadow-2xl z-20 animate-float">
+              <div className="absolute -bottom-3 lg:-bottom-4 xl:-bottom-5 -right-3 lg:-right-4 xl:-right-5 bg-white p-2 lg:p-3 xl:p-4 rounded-lg lg:rounded-xl shadow-lg lg:shadow-xl xl:shadow-2xl z-20 animate-float">
                 <p className="text-lg lg:text-xl xl:text-2xl font-bold text-primary">{content.lawyerExperience}+</p>
                 <p className="text-[10px] lg:text-xs text-gray-600 whitespace-nowrap">Anos de experiência</p>
               </div>
               
               {/* Badge flutuante 2 - Casos */}
-              <div className="absolute -top-2 lg:-top-3 xl:-top-4 -left-2 lg:-left-3 xl:-left-4 bg-white p-2 lg:p-3 xl:p-4 rounded-lg lg:rounded-xl shadow-lg lg:shadow-xl xl:shadow-2xl z-20 animate-float" style={{ animationDelay: '1s' }}>
+              <div className="absolute -top-3 lg:-top-4 xl:-top-5 -left-3 lg:-left-4 xl:-left-5 bg-white p-2 lg:p-3 xl:p-4 rounded-lg lg:rounded-xl shadow-lg lg:shadow-xl xl:shadow-2xl z-20 animate-float" style={{ animationDelay: '1s' }}>
                 <p className="text-lg lg:text-xl xl:text-2xl font-bold text-primary">{content.lawyerCases}+</p>
                 <p className="text-[10px] lg:text-xs text-gray-600 whitespace-nowrap">Casos bem-sucedidos</p>
               </div>
